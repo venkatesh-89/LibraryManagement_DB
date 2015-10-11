@@ -4,26 +4,29 @@ import java.util.ArrayList;
 
 public class AuthorBean {
 
-	private String book_id;
-	private ArrayList<String> Authors;
+	private String bookId;
+	private ArrayList<String> authorList;
 	
-	public AuthorBean(String book_id)
-	{
-		this.book_id = book_id;
-		Authors = new ArrayList<String>();
+	public AuthorBean(){
+		//default Constructor
+	};
+	
+	public AuthorBean(String book_id){
+		this.bookId = book_id;
+		authorList = new ArrayList<String>();
 	}
 	
-	public String getBook_id() {
-		return book_id;
+	public String getBookId() {
+		return bookId;
 	}
-	public void setBook_id(String book_id) {
-		this.book_id = book_id;
+	public void setBookId(String book_id) {
+		this.bookId = book_id;
 	}
-	public ArrayList<String> getAuthors() {
-		return Authors;
+	public ArrayList<String> getAuthorList() {
+		return authorList;
 	}
-	public void setAuthors(ArrayList<String> authors) {
-		Authors = authors;
+	public void setAuthorList(ArrayList<String> authorList) {
+		this.authorList = authorList;
 	}
 	
 	

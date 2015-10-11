@@ -4,7 +4,7 @@ public class BookBean
 {
 	private String bookId;
 	private String bookTitle;
-	private AuthorBean Authors;
+	private AuthorBean authorBean;
 	
 	
 	public String getBookId() {
@@ -19,11 +19,12 @@ public class BookBean
 	public void setBookTitle(String bookTitle) {
 		this.bookTitle = bookTitle;
 	}
-	public AuthorBean getAuthors() {
-		return Authors;
+	public AuthorBean getAuthorBean() {
+		return authorBean;
 	}
-	public void setAuthors(AuthorBean authors) {
-		Authors = authors;
+	public void setAuthorBean(AuthorBean authorBean) {
+		this.authorBean = authorBean;
 	}
+	
 	
 }

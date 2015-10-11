@@ -2,16 +2,16 @@ package bean;
 
 public class LibraryBranchBean {
 	
-	private int branchID;
+	private int branchId;
 	private String branchName;
 	private String address;
 	
 	
 	public int getBranchID() {
-		return branchID;
+		return branchId;
 	}
 	public void setBranchID(int branchID) {
-		this.branchID = branchID;
+		this.branchId = branchID;
 	}
 	public String getBranchName() {
 		return branchName;

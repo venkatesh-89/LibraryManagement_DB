@@ -43,9 +43,9 @@ public class GenericDAO
 		Connection conn = null;
 		try
 		{
-			String dburl = "jdbc:mysql://localhost:3306/library2";
+			String dburl = "jdbc:mysql://localhost:3306/library";
 			String dbUserName = "root";
-			String dbPassword = "root";
+			String dbPassword = "";
 			Class.forName("com.mysql.jdbc.Driver");
 
 			conn = DriverManager.getConnection(dburl,dbUserName,dbPassword);

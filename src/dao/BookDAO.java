@@ -1,9 +1,3 @@
-/**
- * @author Venkatesh
- * Date : 04 October, 2015
- * BookDAO consists of all methods to create, view, update and delete the employee details.
- */
-
 package dao;
 
 import java.sql.Connection;
@@ -11,48 +5,62 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
+
 import bean.*;
 
 public class BookDAO extends GenericDAO
 {
 	Logger log = null;	
 	
-	
-	public void insertBookAuthors(Connection conn, String[] tokens) throws Exception
+	public Boolean createNewBook(String bookId, String bookTitle, String authors) throws Exception
 	{
-		log = log.getLogger("BookDAO : getSearchBookList()");
+		log = log.getLogger("BookDAO : createNewBook()");
 		
+		Connection conn = null;
 		PreparedStatement prepStmnt = null;
-		PreparedStatement prepStmnt2 = null;
-		ResultSet rs = null;
 		
 		try{
+			conn = getConnection();
 			String query = "Insert into book (book_id, title) values(?,?)";
-			String query2 = "Insert into book_authors (book_id, author_name) values(?,?)";
+			
 			prepStmnt = conn.prepareStatement(query);
-			prepStmnt.setString(1, tokens[0]);
-			prepStmnt.setString(2, tokens[1]);
-			prepStmnt.executeUpdate();
+			prepStmnt.setString(1, bookId);
+			prepStmnt.setString(2, bookTitle);
+			try{
+				//prepStmnt.executeUpdate();
+				conn.commit();
+			}
+			catch(Exception ex){
+				//Send to front end
+				return false;
+			}
+			
+			String query2  = "Insert into book_authors (book_id, author_name) values ";
+			
+			if (authors.contains(",")){
+				String[] temp = authors.split(",");
+				for (String author : temp){
+					query2 += "(\"" + bookId +"\", \"" + author.trim() + "\"),";
+				}
+				if (query2.endsWith(",")){
+					query2 = query2.substring(0, query2.length() - 1);
+				}
+			}
+			else{
+				query2 += "(\"" + bookId +"\", \"" + authors.trim() + "\")";
+			}
+			
+			System.out.println(query2);
+			//prepStmnt2 = conn.prepareStatement(query2);
+			//prepStmnt2.executeUpdate();
 			//conn.commit();
-			
-			prepStmnt2 = conn.prepareStatement(query2);
-			prepStmnt2.setString(1, tokens[0]);
-			prepStmnt2.setString(2, tokens[2]);
-			
-			prepStmnt2.executeUpdate();
-			conn.commit();
 		}
 		catch(Exception ex){
 			log.error(ex);
 		}
+		return true;
 	}
 	
-	/**
-	 * Method to search book by title, book_id, author(s)
-	 * @param searchText
-	 * @return
-	 * @throws Exception
-	 */
 	public ArrayList<BookBean> getSearchBookList(String searchText, String searchCriteria) throws Exception
 	{
 		log = log.getLogger("BookDAO : getSearchBookList()");
@@ -72,31 +80,20 @@ public class BookDAO extends GenericDAO
 							   "where book_id like '%" + searchText + "%';";
 				
 				prepStmnt = conn.prepareStatement(query);
-				
 				rs = prepStmnt.executeQuery();
+				
 				BookBean bookB = null;
 				AuthorBean authorB = null;
+				
 				while(rs.next())
 				{
 					bookB = new BookBean();
 					bookB.setBookId(rs.getString(1));
 					bookB.setBookTitle(rs.getString(2));
 					
-					query = "Select book_id, author_name " + 
-							"from book_authors " +
-							"where book_id = '" +
-							bookB.getBookId() + "';";
-					
-					prepStmnt = conn.prepareStatement(query);
-					rs_author = prepStmnt.executeQuery();
-					
 					authorB = new AuthorBean(bookB.getBookId());
 					
-					while(rs_author.next()){
-						authorB.getAuthors().add(rs.getString(2));
-					}
-					
-					bookB.setAuthors(authorB);
+					bookB.setAuthorBean(getAuthorsFromDb(conn, authorB));
 					
 					arrSearchList.add(bookB);
 				}
@@ -110,63 +107,46 @@ public class BookDAO extends GenericDAO
 				prepStmnt = conn.prepareStatement(query);
 				
 				rs = prepStmnt.executeQuery();
+				
 				BookBean bookB = null;
+				AuthorBean authorB = null;
+				
 				while(rs.next())
 				{
 					bookB = new BookBean();
 					bookB.setBookId(rs.getString(1));
 					bookB.setBookTitle(rs.getString(2));
 					
-					query = "Select book_id, author_name " + 
-							"from book_authors " +
-							"where book_id = '" +
-							bookB.getBookId() + "';";
+					authorB = new AuthorBean(bookB.getBookId());
 					
-					prepStmnt = conn.prepareStatement(query);
-					rs_author = prepStmnt.executeQuery();
-					
-					ArrayList<String> authorList = new ArrayList<String>();
-					
-					while(rs_author.next()){
-						authorList.add(rs.getString(2));
-					}
-					
-					bookB.setAuthors(authorList);
+					bookB.setAuthorBean(getAuthorsFromDb(conn, authorB));
 					
 					arrSearchList.add(bookB);
 				}
 			}
 			else if (searchCriteria.equals("authorName")){
 				String query = "Select " +
-							   "book_id, author_name " +
-							   "from book_authors " +
-							   "where author_name like '%" + searchText + "%';";
+							   "book_id, title " +
+							   "from book " + 
+							   "where book_id in (Select book_id from book_authors " +
+							   "where author_name like '%" + searchText + "%')";
 			
 				prepStmnt = conn.prepareStatement(query);
 				
 				rs = prepStmnt.executeQuery();
+				log.info(query);
 				BookBean bookB = null;
+				AuthorBean authorB = null;
+				
 				while(rs.next())
 				{
 					bookB = new BookBean();
 					bookB.setBookId(rs.getString(1));
-					//bookB.setBookTitle(rs.getString(2));
+					bookB.setBookTitle(rs.getString(2));
 					
-					query = "Select book_id, title " + 
-							"from book " +
-							"where book_id = '" +
-							bookB.getBookId() + "';";
+					authorB = new AuthorBean(bookB.getBookId());
 					
-					prepStmnt = conn.prepareStatement(query);
-					rs_author = prepStmnt.executeQuery();
-					
-					ArrayList<String> authorList = new ArrayList<String>();
-					
-					while(rs_author.next()){
-						authorList.add(rs.getString(2));
-					}
-					
-					bookB.setAuthors(authorList);
+					bookB.setAuthorBean(getAuthorsFromDb(conn, authorB));
 					
 					arrSearchList.add(bookB);
 				}
@@ -184,26 +164,31 @@ public class BookDAO extends GenericDAO
 						"GROUP BY book.book_id , title;";
 				
 				prepStmnt = conn.prepareStatement(query);
-			
 				rs = prepStmnt.executeQuery();
+				
 				BookBean bookB = null;
+				AuthorBean authorB = null;
+				
 				while(rs.next())
 				{
 					bookB = new BookBean();
-					ArrayList<String> authorList = new ArrayList<String>();
+					
 					bookB.setBookId(rs.getString(1));
 					bookB.setBookTitle(rs.getString(2));
 					String Authors = rs.getString(3);
+					
+					authorB = new AuthorBean(bookB.getBookId());
+					
 					if (Authors.contains(", ")){
 						String[] temp = Authors.split(", ");
 						for (String author : temp){
-							authorList.add(author);
+							authorB.getAuthorList().add(author);
 						}
 					}
 					else{
-						authorList.add(Authors);
+						authorB.getAuthorList().add(Authors);
 					}
-					bookB.setAuthors(authorList);
+					bookB.setAuthorBean(authorB);
 					
 					arrSearchList.add(bookB);
 				}
@@ -216,13 +201,24 @@ public class BookDAO extends GenericDAO
 		return arrSearchList;
 	}
 
-	public Connection getConn()
-	{
-		Connection conn = null;
+	private AuthorBean getAuthorsFromDb(Connection conn, AuthorBean authorB) throws Exception{
 		
-		conn = getConnection();
+		PreparedStatement prepStmnt = null;
+		ResultSet rs_author = null;
 		
-		return conn;
+		String query = "Select book_id, author_name " + 
+						"from book_authors " +
+						"where book_id = '" +
+						authorB.getBookId() + "';";
+		
+		prepStmnt = conn.prepareStatement(query);
+		rs_author = prepStmnt.executeQuery();
+		
+		while(rs_author.next()){
+			authorB.getAuthorList().add(rs_author.getString(2));
+		}
+		
+		return authorB;
 	}
 	
 }

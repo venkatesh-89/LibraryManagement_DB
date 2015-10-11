@@ -6,11 +6,11 @@
 <title>Search Book</title>	    
     
     <%@include file="include/headerLinks.jsp" %>
-    
+     
       <div id="templatemo_content">
     
     	<div class="section_w920">
-    	<!-- 
+    	<!--
     	<p style="font-size: 16px;color: black;" align="right">Welcome <b><%=session.getAttribute("userName")%>,</b> <a style="color: yellow;" href="<%=context%>/ctr?action=logout">(Logout)</a></p>
     	 -->
     	<h2>Search Book</h2>	
@@ -39,7 +39,7 @@
 		<font style="margin-left: 50px;font-size: 16px;color: blue;">Search results for <b><i><%=(String)session.getAttribute("search") %></i></b> :</font>
 <%		} 
 %>
-		<table style="font-size: 16px;margin-left: 50px;text-align: center;"; border=0; >
+		<table style="font-size: 16px;margin-left: 50px;text-align: center;"; border=1px solid black; border-collapse: collapse" >
 		<tr>
 		<th width=50px>Sr.no</th>
 		<!--th>Action</th>-->
@@ -76,11 +76,10 @@
 					 -->
 					<td><%=bookB.getBookId() %></td>
 					<td><%=bookB.getBookTitle() %></td>
-					<% ArrayList<String> authorList = bookB.getAuthors();  
-						for (String author : authorList){
-							if (tempAuthors == "") { tempAuthors = author; }
-							else { tempAuthors += ", " + author; } 
-						}
+					<%for (String author : bookB.getAuthorBean().getAuthorList()){
+						if (tempAuthors == "") { tempAuthors = author; }
+						else { tempAuthors += ", " + author; } 
+					}
 					%>
 					<td><%=tempAuthors %></td>
 				</tr>
@@ -138,7 +137,8 @@
 	}
 %>
 
-
+<!-- 
 		</div>
     
     </div>
+    -->
