@@ -28,6 +28,7 @@ public class ControllerServlet extends HttpServlet {
 	{
 		HttpSession session = request.getSession();
 		String action = request.getParameter("action");
+		String control = request.getParameter("control");
 		
 		BookDAO bookDAO = new BookDAO();
 		BorrowerDAO borrowerDAO = new BorrowerDAO();
@@ -43,7 +44,8 @@ public class ControllerServlet extends HttpServlet {
 				
 				bookDAO.createNewBook(bookId, bookTitle, authors);
 			}
-			else if (action.equals("AddBorrower")){
+			
+			if (action.equals("AddBorrower")){
 				BorrowerBean borrowB = new BorrowerBean();
 				borrowB.setfName(request.getParameter("fName"));
 				borrowB.setlName(request.getParameter("lName"));
@@ -56,7 +58,66 @@ public class ControllerServlet extends HttpServlet {
 				int card_no = borrowerDAO.addNewBorrower(borrowB);
 				
 			}
-			else if(action.equals("SearchBook"))
+			
+			if (action.equals("Book")){
+				BookBean bookB = new BookBean(request.getParameter("bookId"));
+
+				if (control.equals("Delete")){
+					String msg = bookDAO.deleteBook(bookB);
+					request.setAttribute("msg", msg);
+					System.out.println(msg + '\n' +request.getContextPath());
+					//forwardToLocation(, request, response);
+				}
+				else if (control.equals("Update")){
+					
+				}
+				else{
+
+					bookB = bookDAO.viewBookDetails(bookB);
+					request.setAttribute("bookB", bookB);
+					if(control.equals("View")){
+						request.setAttribute("controlType", "View");
+						forwardToLocation("jsp/ViewBook.jsp", request, response);
+					}
+					else if (control.equals("Edit")){
+						request.setAttribute("controlType", "Edit");
+						forwardToLocation("jsp/EditBook.jsp", request, response);
+					}					
+				}
+				
+			}
+			
+			if (action.equals("Borrower")){
+				if(control.equals("ViewAll")){
+					displayBorrowerListPage(request, response);
+				}
+				else if (control.equals("View")){
+					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					BorrowerBean borrowerB = new BorrowerBean(cardNo);
+					
+					borrowerB = borrowerDAO.viewBorrowerDetails(borrowerB);
+					request.setAttribute("borrowerB", borrowerB);
+					request.setAttribute("controlType", "View");
+					forwardToLocation("jsp/ViewBorrower.jsp", request, response);
+				}
+				else if (control.equals("Edit")){
+					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					BorrowerBean borrowerB = new BorrowerBean(cardNo);
+					
+					borrowerB = borrowerDAO.viewBorrowerDetails(borrowerB);
+					request.setAttribute("borrowerB", borrowerB);
+					request.setAttribute("controlType", "Edit");
+					forwardToLocation("jsp/EditBorrower.jsp", request, response);
+				}
+				else if (control.equals("Update")){
+					
+				}
+				else if (control.equals("Delete")){
+					
+				}
+			}
+			
+			if(action.equals("SearchBook"))
 			{
 				session.setAttribute("BookSearchList",null);
 				session.setAttribute("search", null);
@@ -74,17 +135,27 @@ public class ControllerServlet extends HttpServlet {
 				session.setAttribute("search", searchText);
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
-			else if(action.equals("searchListNext"))
+			
+			if(action.equals("borrowerListNext"))
+			{
+				forwardToLocation("jsp/ListBorrower.jsp", request, response);
+			}
+			
+			if(action.equals("borrowerListPrevious"))
+			{
+				forwardToLocation("jsp/ListBorrower.jsp", request, response);
+			}
+			
+			if(action.equals("searchListNext"))
 			{
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
-			else if(action.equals("searchListPrevious"))
+			
+			if(action.equals("searchListPrevious"))
 			{
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
-			else{
-				System.out.println("No Method in Servlet");
-			}
+			
 				
 			
 		}
@@ -94,6 +165,27 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 	
+	private void displayBorrowerListPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		Logger log = null;
+		log = log.getLogger("Controller Servlet : displayBorrowerListPage()");
+		ArrayList<BorrowerBean> arrAllBorrowerList = new ArrayList<BorrowerBean>();
+		BorrowerDAO borrowerDAO = new BorrowerDAO();
+		HttpSession session = request.getSession();
+		try
+		{
+			if(session.getAttribute("BorrowerList")==null)
+			{
+				arrAllBorrowerList = borrowerDAO.viewAllBorrower();
+				session.setAttribute("BorrowerList", arrAllBorrowerList);
+			}
+			forwardToLocation("jsp/ListBorrower.jsp", request, response);
+		}
+		catch(Exception e)
+		{
+			log.error(e);
+		}
+	}
 	
 	private void forwardToLocation(String url, HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {

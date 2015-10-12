@@ -11,6 +11,11 @@ public class BorrowerBean {
 	private String state;
 	private String phone;
 	
+	public BorrowerBean(){}
+	
+	public BorrowerBean(int cardNo){
+		this.cardNo = cardNo;
+	}
 	
 	public int getCardNo() {
 		return cardNo;

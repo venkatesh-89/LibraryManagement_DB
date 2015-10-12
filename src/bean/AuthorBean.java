@@ -29,5 +29,13 @@ public class AuthorBean {
 		this.authorList = authorList;
 	}
 	
-	
+	@Override
+	public String toString(){
+		String out = "";
+		for(String author : authorList){
+			out += author + ", ";
+		}
+		out = out.substring(0, out.length() - 2);
+		return out;
+	}
 }

@@ -2,6 +2,24 @@
 <%@page import="bean.BookBean"%>
 
 <%@include file="include/header1.jsp" %>
+
+<style>
+.inputTable{
+	font-size: 16px;
+	margin-left: 20px;
+}
+
+.dataTable{
+	font-size: 16px;
+	margin-left: 20px;
+	text-align: center; 
+	border: 1;
+}
+
+.bookTitle{
+	text-align: left;
+}
+</style>
 	    
 <title>Search Book</title>	    
     
@@ -16,7 +34,7 @@
     	<h2>Search Book</h2>	
 
 <form method="post" action="<%=context %>/ctr">
-<table style="font-size: 16px;margin-left: 50px">
+<table class="inputTable">
 <tr>
 <td><input type="text" name="searchBook" size="30" value="Enter Book ID/ Title/ Author" onfocus="if(value == 'Enter Book ID/ Title/ Author'){value = '';}" /></td>
 <td><select name="searchCriteria">
@@ -36,18 +54,18 @@
 		if(session.getAttribute("search")!=null)
 		{
 %>
-		<font style="margin-left: 50px;font-size: 16px;color: blue;">Search results for <b><i><%=(String)session.getAttribute("search") %></i></b> :</font>
+		<font style="margin-left: 20px;font-size: 16px;color: blue;">Search results for <b><i><%=(String)session.getAttribute("search") %></i></b> :</font>
 <%		} 
 %>
-		<table style="font-size: 16px;margin-left: 50px;text-align: center;"; border=1px solid black; border-collapse: collapse" >
+		<table class="dataTable" border=1>
 		<tr>
 		<th width=50px>Sr.no</th>
 		<!--th>Action</th>-->
 		<th width=100px>Book ID</th>
-		<th width=500px>Title</th>
+		<th width=400px>Title</th>
 		<th width=200px>Author(s)</th>
-		<th width=100px></th>
-		<th width=50px></th>
+		<th width=100px>Action</th>
+		<th width=50px>Cart</th>
 		</tr>
 		
 <%		ArrayList<BookBean> arrBookSearchList = (ArrayList<BookBean>) session.getAttribute("BookSearchList");
@@ -68,28 +86,28 @@
 %>
 				<tr>
 					<td><%=i+1 %></td>
-					<!-- 
-					<td><a href="<%=context %>/ctr?action=Employee&control=View&empId=<%--=empB.getEmployeeId() --%>">View</a> || 
-						<a href="<%=context %>/ctr?action=Employee&control=Edit&empId=<%--=empB.getEmployeeId() --%>">Edit</a> || 
-						<a href="<%=context %>/ctr?action=Employee&control=Delete&empId=<%--=empB.getEmployeeId() --%>"
-							onclick="return confirm('Are you sure you want to delete?');">Delete</a></td>
-					 -->
-					<td><%=bookB.getBookId() %></td>
-					<td><%=bookB.getBookTitle() %></td>
-					<%for (String author : bookB.getAuthorBean().getAuthorList()){
+					
+					<td><a href="<%=context %>/ctr?action=Book&control=View&bookId=<%=bookB.getBookId() %>"><%=bookB.getBookId() %></a></td>
+					<td class="bookTitle"><%=bookB.getBookTitle() %></td>
+					<%--for (String author : bookB.getAuthorBean().getAuthorList()){
 						if (tempAuthors == "") { tempAuthors = author; }
 						else { tempAuthors += ", " + author; } 
 					}
-					%>
-					<td><%=tempAuthors %></td>
+					--%>
+					<td><%=bookB.getAuthorBean().toString() %></td>
+					<td><a href="<%=context %>/ctr?action=Book&control=Edit&bookId=<%=bookB.getBookId() %>">Edit</a> || 
+						<a href="<%=context %>/ctr?action=Book&control=Delete&bookId=<%=bookB.getBookId() %>"
+							onclick="return confirm('Are you sure you want to delete?');">Delete</a>
+					</td>
+					<td><input type="button" value="Add to Cart"/></td>
 				</tr>
 <%			} 
 %>
-			<tr><td colspan=6><br/></td></tr>
+			<tr><td style="border:0px" colspan=6><br/></td></tr>
 			<tr>
-			<td style="text-align: center;"><a href="<%=context %>/ctr?action=searchListNext&currentPosition=<%=0 %>">First</a>
+			<td style="text-align: center;border:0px"><a href="<%=context %>/ctr?action=searchListNext&currentPosition=<%=0 %>">First</a>
 			</td>
-			<td style="text-align: left">
+			<td style="text-align: left;border:0px">
 <% 
 			if(start!=0)
 			{
@@ -98,7 +116,7 @@
 	<% 
 			}
 	%>						
-			<td style="text-align: center" colspan="2">
+			<td style="text-align: center;border:0px" colspan="2">
 	<% 		if(size-(size%50)==size){a = size - 50;}else {a=(size-(size%50));}
 			if(size%50 == 0){b = size/50;}else{b = (size/50)+1;}
 			for(int k=0; k <b;k++)
@@ -108,7 +126,7 @@
 	<%		}
 	%>
 			</td>
-			<td style="text-align: right">
+			<td style="text-align: right;border:0px">
 	<%		if(i<size)
 			{ 
 	%>
@@ -116,10 +134,10 @@
 	<%		} 
 	%>
 			</td>
-			<td style="text-align: center;"><a href="<%=context %>/ctr?action=searchListNext&currentPosition=<%=a %>">Last</a></td>
+			<td style="text-align: center;border:0px"><a href="<%=context %>/ctr?action=searchListNext&currentPosition=<%=a %>">Last</a></td>
 			</tr>
 			<tr>
-			<td style="text-align: center;" colspan="7">Total No.of Records : <%=size %> </td>
+			<td style="text-align: center;border:0px" colspan="7">Total No.of Records : <%=size %> </td>
 			</tr>
 			</table>
 <%		}

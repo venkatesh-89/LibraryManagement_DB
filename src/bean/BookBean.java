@@ -6,6 +6,11 @@ public class BookBean
 	private String bookTitle;
 	private AuthorBean authorBean;
 	
+	public BookBean(){}
+	
+	public BookBean(String bookId){
+		this.bookId = bookId;
+	}
 	
 	public String getBookId() {
 		return bookId;

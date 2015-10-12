@@ -16,13 +16,13 @@
 			<p>Book Management : </p>
 			<ul> 
         	<li> <a href="<%=context%>/jsp/NewBook.jsp">Create a new Book </a></li>
-        	<li> <a href="<%=context%>/jsp/ViewBook.jsp">Update an existing Book </a></li>
+        	<li> <a href="<%=context%>/jsp/ViewBook.jsp">View/Update an existing Book </a></li>
         	</ul>
         	
         	<p>Borrower Management : </p>
         	<ul>
         	<li> <a href="<%=context%>/jsp/NewBorrower.jsp">Add a new Borrower </a></li>
-        	<li> <a href="<%=context%>/jsp/EditBorrower.jsp">Update an existing Borrower </a></li>
+        	<li> <a href="<%=context%>/ctr?action=Borrower&control=ViewAll">View all Borrowers </a></li>
         	</ul>
         </div>
         

@@ -61,6 +61,80 @@ public class BookDAO extends GenericDAO
 		return true;
 	}
 	
+	public BookBean viewBookDetails(BookBean bookB) throws Exception{
+		log = log.getLogger("BookDAO : viewBookDetails()");
+		
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		ResultSet rs = null;
+		AuthorBean authorB = null;
+		
+		try{
+			conn = getConnection();
+			String query = "Select book_id, title " +
+							"from book " +
+							"where book_id = \"" + bookB.getBookId() + "\"";
+			
+			prepStmnt = conn.prepareStatement(query);
+			rs = prepStmnt.executeQuery();
+			
+			while(rs.next()){
+				bookB.setBookTitle(rs.getString(2));
+				authorB = new AuthorBean(bookB.getBookId());
+				
+				bookB.setAuthorBean(getAuthorsFromDb(conn, authorB));
+			}
+		}
+		catch(Exception e){
+			log.error(e);
+		}
+		return bookB;
+	}
+	
+	
+	public void updateBook(BookBean bookB) throws Exception{
+		
+	}
+	
+	public String deleteBook(BookBean bookB) throws Exception{
+		log = log.getLogger("BookDAO : deleteBook()");
+		String msg = "";
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		PreparedStatement prepStmnt2 = null;
+		ResultSet rs = null;
+		
+		try{
+			conn = getConnection();
+			
+			String query = "Delete from book_authors where book_id = ?";
+			prepStmnt = conn.prepareStatement(query);
+			prepStmnt.setString(1, bookB.getBookId());
+			prepStmnt.executeUpdate();
+			
+			String query2 = "Delete from book_copies where book_id = ?";
+			prepStmnt2 = conn.prepareStatement(query2);
+			prepStmnt2.setString(1, bookB.getBookId());
+			prepStmnt2.executeUpdate();
+			
+			String query3 = "Delete from book where book_id = ?";
+			prepStmnt2 = conn.prepareStatement(query3);
+			prepStmnt2.setString(1, bookB.getBookId());
+			prepStmnt2.executeUpdate();
+			conn.commit();
+		}
+		catch (Exception e){
+			msg = e.getMessage();
+			log.error(e);
+			conn.rollback();
+		}
+		finally{
+			closeConnection(rs, prepStmnt, conn);
+		}
+		
+		return msg;
+	}
+	
 	public ArrayList<BookBean> getSearchBookList(String searchText, String searchCriteria) throws Exception
 	{
 		log = log.getLogger("BookDAO : getSearchBookList()");
@@ -134,7 +208,7 @@ public class BookDAO extends GenericDAO
 				prepStmnt = conn.prepareStatement(query);
 				
 				rs = prepStmnt.executeQuery();
-				log.info(query);
+				
 				BookBean bookB = null;
 				AuthorBean authorB = null;
 				
