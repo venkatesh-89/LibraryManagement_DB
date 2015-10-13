@@ -6,6 +6,11 @@ public class LibraryBranchBean {
 	private String branchName;
 	private String address;
 	
+	public LibraryBranchBean(){}
+	
+	public LibraryBranchBean(int branchId){
+		this.branchId = branchId;
+	}
 	
 	public int getBranchID() {
 		return branchId;

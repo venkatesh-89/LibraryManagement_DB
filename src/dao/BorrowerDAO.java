@@ -11,8 +11,9 @@ import bean.*;
 public class BorrowerDAO extends GenericDAO{
 	Logger log = null;
 	
-	public int addNewBorrower(BorrowerBean borrowerB) throws Exception{
+	public String addNewBorrower(BorrowerBean borrowerB) throws Exception{
 		log = log.getLogger("BorrowerDAO : addNewBorrower()");
+		String msg = "";
 		int card_no = 0;
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
@@ -40,17 +41,22 @@ public class BorrowerDAO extends GenericDAO{
 			prepStmnt.setString(6, borrowerB.getState());
 			rs = prepStmnt.executeQuery();
 			
-			if (rs.getInt(1) > 0){ 
-				//send error to front end
-				return card_no;
+			if (rs.next()){
+				if(rs.getInt(1) > 0){
+					//send error to front end
+					msg = "Error - Borrower already exists with Card No : " + rs.getInt(1) ;
+					return msg;
+				}
 			}
 			rs.close();
 			
 			query = "Select max(card_no) from borrower";
 			
 			rs = prepStmnt.executeQuery(query);
-			card_no = rs.getInt(1) + 1; 
-			
+			if (rs.next()){
+				card_no = rs.getInt(1) + 1;
+			}
+			System.out.println(card_no);
 			query = "Insert into borrower (card_no, fname, lname, email, address, city, state, phone) values (?,?,?,?,?,?,?,?)";
 			
 			prepStmnt2 = conn.prepareStatement(query);
@@ -63,7 +69,7 @@ public class BorrowerDAO extends GenericDAO{
 			prepStmnt2.setString(7, borrowerB.getState());
 			prepStmnt2.setString(8, borrowerB.getPhone());
 			
-			//prepStmnt2.executeUpdate();
+			prepStmnt2.executeUpdate();
 			conn.commit();
 			
 		}
@@ -73,7 +79,8 @@ public class BorrowerDAO extends GenericDAO{
 		finally{
 			closeConnection(rs, prepStmnt, conn);
 		}
-		return card_no;
+		msg = "Borrower created successfully with Card No : " + card_no;
+		return msg;
 		
 	}
 
@@ -103,8 +110,8 @@ public class BorrowerDAO extends GenericDAO{
 				borrowerB.setState(rs.getString(7));
 				borrowerB.setPhone(rs.getString(8));
 				
-				rs.close();
 			}
+			
 		}
 		catch(Exception e){
 			log.error(e);
@@ -114,6 +121,66 @@ public class BorrowerDAO extends GenericDAO{
 		}
 		
 		return borrowerB;
+	}
+	
+	
+	public String updateBorrower(BorrowerBean borrowerB) throws Exception{
+		log = log.getLogger("BorrowerDAO : updateBorrower()");
+		String msg = "Update successful";
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		ResultSet rs = null;
+		
+		try{
+			conn = getConnection();
+			String query = "Update borrower set fName = ?, lName = ?, email = ?, address = ?, city = ?, state = ?, phone = ? " +
+							"where card_no = ?";
+			
+			prepStmnt = conn.prepareStatement(query);
+			prepStmnt.setString(1, borrowerB.getfName());
+			prepStmnt.setString(2, borrowerB.getlName());
+			prepStmnt.setString(3, borrowerB.getEmailId());
+			prepStmnt.setString(4, borrowerB.getAddress());
+			prepStmnt.setString(5, borrowerB.getCity());
+			prepStmnt.setString(6, borrowerB.getState());
+			prepStmnt.setString(7, borrowerB.getPhone());
+			prepStmnt.setInt(8, borrowerB.getCardNo());
+			
+			prepStmnt.executeUpdate();
+			conn.commit();
+		}
+		catch(Exception e){
+			msg = e.getMessage();
+			log.error(e);
+		}
+		
+		return msg;
+	}
+	
+	
+	public String deleteBorrower(int cardNo) throws Exception{
+		log = log.getLogger("BorrowerDAO : deleteBorrower()");
+		String msg = "Delete Successful";
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		ResultSet rs = null;
+		
+		try{
+			conn = getConnection();
+			String query = "Delete from borrower where card_no = ?";
+			
+			prepStmnt = conn.prepareStatement(query);
+			prepStmnt.setInt(1, cardNo);
+			prepStmnt.executeUpdate();
+			conn.commit();
+			
+		}
+		catch (Exception e){
+			msg = e.getMessage();
+			log.error(e);
+		}
+		
+		return msg;
 	}
 	
 	public ArrayList<BorrowerBean> viewAllBorrower() throws Exception

@@ -12,10 +12,10 @@
     	
     	<h2>Borrower Details :</h2><br/>
     	
-<form name="viewBorrower" action="<%=context %>/ctr">
-<%if(request.getAttribute("borrowerB")!=null)
-	{
-		BorrowerBean borrowerB = (BorrowerBean) request.getAttribute("borrowerB");
+		<form name="viewBorrower" action="<%=context %>/ctr">
+		<%if(request.getAttribute("borrowerB")!=null)
+		{
+			BorrowerBean borrowerB = (BorrowerBean) request.getAttribute("borrowerB");
 		%>
 			<table style="font-size: 16px; margin-left: 50px;" border=0>
 			<tr>

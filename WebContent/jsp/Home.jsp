@@ -24,6 +24,12 @@
         	<li> <a href="<%=context%>/jsp/NewBorrower.jsp">Add a new Borrower </a></li>
         	<li> <a href="<%=context%>/ctr?action=Borrower&control=ViewAll">View all Borrowers </a></li>
         	</ul>
+        	
+        	<p>Library Branch Management : </p>
+        	<ul>
+        	<li> <a href="<%=context%>/jsp/NewBranch.jsp">Add a new Borrower </a></li>
+        	<li> <a href="<%=context%>/ctr?action=Branch&control=ViewAll">View all Branches </a></li>
+        	</ul>
         </div>
         
     </div>

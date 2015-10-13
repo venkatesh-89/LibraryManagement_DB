@@ -10,7 +10,7 @@
     	
     	<h2>Borrower List</h2><br/>
     	
-    	<span style="font-size: 18px;color: black;text-align: center;" >
+    	<span style="font-size: 18px;color: red;text-align: center;" >
 <%if(request.getAttribute("BorrowerRegSuccess")!= null)
 	{
 		out.println(request.getAttribute("BorrowerRegSuccess"));

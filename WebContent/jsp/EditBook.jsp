@@ -30,11 +30,15 @@
 			<td></td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center"><input type="submit" value="<%if(type.equals("View")){%>Edit<%}else{ %>Update <%}%>"/> 
-				<input type="reset" value="Reset"/>
-				<input type="button" value="Delete"/>
+			<td align="center" colspan="2"><br/>
+				<input type="submit" name="control" value="Update"/>
+				<input type="hidden" name="action" value="Book" />
+			
+				<input type="hidden" name="bookId" value="<%=bookB.getBookId() %>"></input>
+			
+				<input type="reset" name="reset" value="Reset" />
+				<input type="submit" name="control" value="Delete" onclick="return confirm('Are you sure you want to delete?');"/>
 			</td>
-			<td><input type="hidden" name="action" value="UpdateBook"></td>
 		</tr>
 	</table>
 	</form>

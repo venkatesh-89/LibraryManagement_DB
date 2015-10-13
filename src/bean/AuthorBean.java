@@ -29,6 +29,18 @@ public class AuthorBean {
 		this.authorList = authorList;
 	}
 	
+	public void setAuthorList(String authorList){
+		if (authorList.contains(",")){
+			String[] temp = authorList.split(",");
+			for (String author: temp){
+				this.authorList.add(author.trim());
+			}
+		}
+		else{
+			this.authorList.add(authorList.trim());
+		}
+	}
+	
 	@Override
 	public String toString(){
 		String out = "";

@@ -32,6 +32,7 @@ public class ControllerServlet extends HttpServlet {
 		
 		BookDAO bookDAO = new BookDAO();
 		BorrowerDAO borrowerDAO = new BorrowerDAO();
+		BranchDAO branchDAO = new BranchDAO();
 		
 		Logger log = null;
 		log = log.getLogger("Controller Servlet");
@@ -55,8 +56,9 @@ public class ControllerServlet extends HttpServlet {
 				borrowB.setState(request.getParameter("state"));
 				borrowB.setPhone(request.getParameter("phone"));
 				
-				int card_no = borrowerDAO.addNewBorrower(borrowB);
-				
+				String msg = borrowerDAO.addNewBorrower(borrowB);
+				request.setAttribute("msg", msg);
+				forwardToLocation("jsp/NewBorrower.jsp", request, response);
 			}
 			
 			if (action.equals("Book")){
@@ -69,7 +71,12 @@ public class ControllerServlet extends HttpServlet {
 					//forwardToLocation(, request, response);
 				}
 				else if (control.equals("Update")){
+					bookB.setBookTitle(request.getParameter("bookTitle"));
+					AuthorBean authorB = new AuthorBean(bookB.getBookId());
+					authorB.setAuthorList(request.getParameter("authors"));
+					bookB.setAuthorBean(authorB);
 					
+					String msg = bookDAO.updateBookDetails(bookB);
 				}
 				else{
 
@@ -110,10 +117,71 @@ public class ControllerServlet extends HttpServlet {
 					forwardToLocation("jsp/EditBorrower.jsp", request, response);
 				}
 				else if (control.equals("Update")){
+					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					BorrowerBean borrowerB = new BorrowerBean(cardNo);
 					
+					borrowerB.setfName(request.getParameter("fName"));
+					borrowerB.setlName(request.getParameter("lName"));
+					borrowerB.setEmailId(request.getParameter("email"));
+					borrowerB.setAddress(request.getParameter("address"));
+					borrowerB.setCity(request.getParameter("city"));
+					borrowerB.setState(request.getParameter("state"));
+					borrowerB.setPhone(request.getParameter("phone"));
+					
+					String msg = borrowerDAO.updateBorrower(borrowerB);
+					request.setAttribute("BorrowerUpdateSuccess", msg);
+					displayBorrowerListPage(request, response);
 				}
 				else if (control.equals("Delete")){
+					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
 					
+					String msg = borrowerDAO.deleteBorrower(cardNo);
+					
+					request.setAttribute("BorrowerDeleteSuccess", msg);
+					displayBorrowerListPage(request, response);
+				}
+			}
+			
+			if (action.equals("Branch")){
+				if(control.equals("ViewAll")){
+					displayBranchListPage(request, response);
+				}
+				else if (control.equals("View")){
+					int branchId = Integer.parseInt(request.getParameter("branchId"));
+					LibraryBranchBean branchB = new LibraryBranchBean(branchId);
+					
+					branchB = branchDAO.viewBranchDetails(branchB);
+					request.setAttribute("branchB", branchB);
+					request.setAttribute("controlType", "View");
+					forwardToLocation("jsp/ViewBranch.jsp", request, response);
+				}
+				else if (control.equals("Edit")){
+					int branchId = Integer.parseInt(request.getParameter("branchId"));
+					LibraryBranchBean branchB = new LibraryBranchBean(branchId);
+					
+					branchB = branchDAO.viewBranchDetails(branchB);
+					request.setAttribute("branchB", branchB);
+					request.setAttribute("controlType", "Edit");
+					forwardToLocation("jsp/EditBranch.jsp", request, response);
+				}
+				else if (control.equals("Update")){
+					int branchId = Integer.parseInt(request.getParameter("branchId"));
+					LibraryBranchBean branchB = new LibraryBranchBean(branchId);
+					
+					branchB.setBranchName(request.getParameter("branchName"));
+					branchB.setAddress(request.getParameter("address"));
+					
+					String msg = branchDAO.updateBranch(branchB);
+					request.setAttribute("BranchUpdateSuccess", msg);
+					displayBranchListPage(request, response);
+				}
+				else if (control.equals("Delete")){
+					int branchId = Integer.parseInt(request.getParameter("branchId"));
+					
+					String msg = branchDAO.deleteBranch(branchId);
+					
+					request.setAttribute("BranchDeleteSuccess", msg);
+					displayBranchListPage(request, response);
 				}
 			}
 			
@@ -180,6 +248,28 @@ public class ControllerServlet extends HttpServlet {
 				session.setAttribute("BorrowerList", arrAllBorrowerList);
 			}
 			forwardToLocation("jsp/ListBorrower.jsp", request, response);
+		}
+		catch(Exception e)
+		{
+			log.error(e);
+		}
+	}
+	
+	private void displayBranchListPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		Logger log = null;
+		log = log.getLogger("Controller Servlet : displayBranchListPage()");
+		ArrayList<LibraryBranchBean> arrAllBranchList = new ArrayList<LibraryBranchBean>();
+		BranchDAO branchDAO = new BranchDAO();
+		HttpSession session = request.getSession();
+		try
+		{
+			if(session.getAttribute("BranchList")==null)
+			{
+				arrAllBranchList = branchDAO.viewAllBranch();
+				session.setAttribute("BranchList", arrAllBranchList);
+			}
+			forwardToLocation("jsp/ListBranch.jsp", request, response);
 		}
 		catch(Exception e)
 		{

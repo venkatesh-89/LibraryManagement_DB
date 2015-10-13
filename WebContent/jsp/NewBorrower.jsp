@@ -6,6 +6,11 @@
     
     <h2>Add a new borrower</h2>
 
+	<%if(request.getAttribute("msg") != null){ %>
+		<span><%=request.getAttribute("msg") %> </span>
+	<% } %>
+	
+	<br><br>
 	<form method="post" action="<%=context %>/ctr">
 	<table>
 		<tr>

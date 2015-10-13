@@ -92,8 +92,26 @@ public class BookDAO extends GenericDAO
 	}
 	
 	
-	public void updateBook(BookBean bookB) throws Exception{
+	public String updateBookDetails(BookBean bookB) throws Exception{
+		log = log.getLogger("BookDAO : deleteBook()");
+		String msg = "";
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		PreparedStatement prepStmnt2 = null;
+		ResultSet rs = null;
 		
+		try{
+			conn = getConnection();
+			String query = "Update book set title = ? " +
+							"where book_id = ?";
+			
+			String query2 = "Update author";
+		}
+		catch(Exception e){
+			
+		}
+		
+		return msg;
 	}
 	
 	public String deleteBook(BookBean bookB) throws Exception{
