@@ -66,6 +66,7 @@ public class BookDAO extends GenericDAO
 		
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
+		PreparedStatement prepStmnt2 = null;
 		ResultSet rs = null;
 		AuthorBean authorB = null;
 		
@@ -84,6 +85,29 @@ public class BookDAO extends GenericDAO
 				
 				bookB.setAuthorBean(getAuthorsFromDb(conn, authorB));
 			}
+			
+			rs.close();
+			
+			query = "Select book_id, branch_id, no_of_copies, copies_available " +
+					"from book_copies " +
+					"where book_id = \"" + bookB.getBookId() + "\"";
+			
+			prepStmnt2 = conn.prepareStatement(query);
+			rs = prepStmnt2.executeQuery();
+			
+			ArrayList<BookCopiesBean> arrListBookCopiesB = new ArrayList<BookCopiesBean>();
+			
+			while(rs.next()){
+				BookCopiesBean bookCopyB = new BookCopiesBean();
+				
+				bookCopyB.setBookId(rs.getString(1));
+				bookCopyB.setBranchId(rs.getInt(2));
+				bookCopyB.setNoOfCopies(rs.getInt(3));
+				bookCopyB.setCopiesAvailable(rs.getInt(4));
+				
+				arrListBookCopiesB.add(bookCopyB);
+			}
+			
 		}
 		catch(Exception e){
 			log.error(e);

@@ -5,6 +5,7 @@ public class BookCopiesBean {
 	private String bookId;
 	private int branchId;
 	private int noOfCopies;
+	private int copiesAvailable;
 	
 	
 	public String getBookId() {
@@ -24,6 +25,12 @@ public class BookCopiesBean {
 	}
 	public void setNoOfCopies(int noOfCopies) {
 		this.noOfCopies = noOfCopies;
+	}
+	public int getCopiesAvailable() {
+		return copiesAvailable;
+	}
+	public void setCopiesAvailable(int copiesAvailable) {
+		this.copiesAvailable = copiesAvailable;
 	}
 	
 	

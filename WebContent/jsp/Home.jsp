@@ -16,7 +16,7 @@
 			<p>Book Management : </p>
 			<ul> 
         	<li> <a href="<%=context%>/jsp/NewBook.jsp">Create a new Book </a></li>
-        	<li> <a href="<%=context%>/jsp/ViewBook.jsp">View/Update an existing Book </a></li>
+        	<li> <a href="<%=context%>/jsp/SearchBook.jsp">View/Update an existing Book </a></li>
         	</ul>
         	
         	<p>Borrower Management : </p>
