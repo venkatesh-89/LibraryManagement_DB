@@ -115,4 +115,5 @@ Stacktrace:
 
 Stacktrace:
  2015-10-12 22:23:55,111 ERROR BranchDAO : deleteBranch()  - com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constraint fails (`library2`.`book_copies`, CONSTRAINT `branch_id` FOREIGN KEY (`branch_id`) REFERENCES `library_branch` (`branch_id`) ON DELETE NO ACTION ON UPDATE NO ACTION)
+ 2015-10-20 04:10:19,554 ERROR BranchDAO : deleteBranch()  - com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constraint fails (`library2`.`book_copies`, CONSTRAINT `branch_id` FOREIGN KEY (`branch_id`) REFERENCES `library_branch` (`branch_id`) ON DELETE NO ACTION ON UPDATE NO ACTION)
  

@@ -5,7 +5,7 @@
         
   	<%@include file="include/headerLinks.jsp" %>
     
-    <h2>Edit Book : </h2>
+    <h2>Edit Branch : </h2>
 
 	<form method="post" action="<%=context %>/ctr">
 	<% LibraryBranchBean branchB = null; String type = "";

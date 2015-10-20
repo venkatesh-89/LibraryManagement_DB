@@ -58,7 +58,19 @@ public class ControllerServlet extends HttpServlet {
 				
 				String msg = borrowerDAO.addNewBorrower(borrowB);
 				request.setAttribute("msg", msg);
+				clearBorrowerList(request);
 				forwardToLocation("jsp/NewBorrower.jsp", request, response);
+			}
+			
+			if (action.equals("AddBranch")){
+				LibraryBranchBean branchB = new LibraryBranchBean();
+				branchB.setBranchName(request.getParameter("branchName"));
+				branchB.setAddress(request.getParameter("address"));
+				String msg = branchDAO.addNewBranch(branchB);
+				
+				request.setAttribute("msg", msg);
+				clearBranchList(request);
+				forwardToLocation("jsp/NewBranch.jsp", request, response);
 			}
 			
 			if (action.equals("Book")){
@@ -130,6 +142,7 @@ public class ControllerServlet extends HttpServlet {
 					
 					String msg = borrowerDAO.updateBorrower(borrowerB);
 					request.setAttribute("BorrowerUpdateSuccess", msg);
+					clearBorrowerList(request);
 					displayBorrowerListPage(request, response);
 				}
 				else if (control.equals("Delete")){
@@ -138,6 +151,7 @@ public class ControllerServlet extends HttpServlet {
 					String msg = borrowerDAO.deleteBorrower(cardNo);
 					
 					request.setAttribute("BorrowerDeleteSuccess", msg);
+					clearBorrowerList(request);
 					displayBorrowerListPage(request, response);
 				}
 			}
@@ -173,6 +187,7 @@ public class ControllerServlet extends HttpServlet {
 					
 					String msg = branchDAO.updateBranch(branchB);
 					request.setAttribute("BranchUpdateSuccess", msg);
+					clearBranchList(request);
 					displayBranchListPage(request, response);
 				}
 				else if (control.equals("Delete")){
@@ -181,6 +196,7 @@ public class ControllerServlet extends HttpServlet {
 					String msg = branchDAO.deleteBranch(branchId);
 					
 					request.setAttribute("BranchDeleteSuccess", msg);
+					clearBranchList(request);
 					displayBranchListPage(request, response);
 				}
 			}
@@ -224,6 +240,15 @@ public class ControllerServlet extends HttpServlet {
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
 			
+			if(action.equals("branchListNext"))
+			{
+				forwardToLocation("jsp/ListBranch.jsp", request, response);
+			}
+			
+			if(action.equals("branchListPrevious"))
+			{
+				forwardToLocation("jsp/ListBranch.jsp", request, response);
+			}
 				
 			
 		}
@@ -255,6 +280,20 @@ public class ControllerServlet extends HttpServlet {
 		}
 	}
 	
+	private void clearBorrowerList(HttpServletRequest request) throws Exception{
+		Logger log = null;
+		log = log.getLogger("Controller Servlet : clearBorrowerList()");
+		HttpSession session = request.getSession();
+		try{
+			if(session.getAttribute("BorrowerList")!=null){
+				session.setAttribute("BorrowerList", null);
+			}
+		}
+		catch(Exception e){
+			log.error(e);
+		}
+	}
+	
 	private void displayBranchListPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		Logger log = null;
@@ -273,6 +312,20 @@ public class ControllerServlet extends HttpServlet {
 		}
 		catch(Exception e)
 		{
+			log.error(e);
+		}
+	}
+	
+	private void clearBranchList(HttpServletRequest request) throws Exception{
+		Logger log = null;
+		log = log.getLogger("Controller Servlet : clearBranchList()");
+		HttpSession session = request.getSession();
+		try{
+			if(session.getAttribute("BranchList")!=null){
+				session.setAttribute("BranchList", null);
+			}
+		}
+		catch(Exception e){
 			log.error(e);
 		}
 	}
