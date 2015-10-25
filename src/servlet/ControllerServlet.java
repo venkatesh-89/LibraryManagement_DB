@@ -1,8 +1,10 @@
 package servlet;
 
 import java.io.IOException;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import bean.*;
 import dao.*;
@@ -28,11 +31,15 @@ public class ControllerServlet extends HttpServlet {
 	{
 		HttpSession session = request.getSession();
 		String action = request.getParameter("action");
-		String control = request.getParameter("control");
+		String control = "";
+		if (request.getParameter("control") != null){
+			control = request.getParameter("control");
+		}
 		
 		BookDAO bookDAO = new BookDAO();
 		BorrowerDAO borrowerDAO = new BorrowerDAO();
 		BranchDAO branchDAO = new BranchDAO();
+		CheckoutDAO checkoutDAO = new CheckoutDAO();
 		
 		Logger log = null;
 		log = log.getLogger("Controller Servlet");
@@ -52,8 +59,6 @@ public class ControllerServlet extends HttpServlet {
 				borrowB.setlName(request.getParameter("lName"));
 				borrowB.setEmailId(request.getParameter("email"));
 				borrowB.setAddress(request.getParameter("address"));
-				borrowB.setCity(request.getParameter("city"));
-				borrowB.setState(request.getParameter("state"));
 				borrowB.setPhone(request.getParameter("phone"));
 				
 				String msg = borrowerDAO.addNewBorrower(borrowB);
@@ -91,9 +96,11 @@ public class ControllerServlet extends HttpServlet {
 					String msg = bookDAO.updateBookDetails(bookB);
 				}
 				else{
-
-					bookB = bookDAO.viewBookDetails(bookB);
+					ArrayList<BookCopiesBean> arrListBookCopiesB = new ArrayList<BookCopiesBean>();
+					
+					bookB = bookDAO.viewBookDetails(bookB, arrListBookCopiesB);
 					request.setAttribute("bookB", bookB);
+					request.setAttribute("arrListBookCopiesB", arrListBookCopiesB);
 					if(control.equals("View")){
 						request.setAttribute("controlType", "View");
 						forwardToLocation("jsp/ViewBook.jsp", request, response);
@@ -101,7 +108,11 @@ public class ControllerServlet extends HttpServlet {
 					else if (control.equals("Edit")){
 						request.setAttribute("controlType", "Edit");
 						forwardToLocation("jsp/EditBook.jsp", request, response);
-					}					
+					}
+					if(control.equals("ViewCopies")){
+						request.setAttribute("controlType", "View");
+						forwardToLocation("jsp/ViewBookCopies.jsp", request, response);
+					}
 				}
 				
 			}
@@ -114,18 +125,22 @@ public class ControllerServlet extends HttpServlet {
 					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
 					BorrowerBean borrowerB = new BorrowerBean(cardNo);
 					
-					borrowerB = borrowerDAO.viewBorrowerDetails(borrowerB);
-					request.setAttribute("borrowerB", borrowerB);
-					request.setAttribute("controlType", "View");
+					boolean stat = borrowerDAO.viewBorrowerDetails(borrowerB);
+					if (stat == true ){
+						request.setAttribute("borrowerB", borrowerB);
+						request.setAttribute("controlType", "View");
+					}
 					forwardToLocation("jsp/ViewBorrower.jsp", request, response);
 				}
 				else if (control.equals("Edit")){
 					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
 					BorrowerBean borrowerB = new BorrowerBean(cardNo);
 					
-					borrowerB = borrowerDAO.viewBorrowerDetails(borrowerB);
-					request.setAttribute("borrowerB", borrowerB);
-					request.setAttribute("controlType", "Edit");
+					boolean stat = borrowerDAO.viewBorrowerDetails(borrowerB);
+					if (stat == true ){
+						request.setAttribute("borrowerB", borrowerB);
+						request.setAttribute("controlType", "Edit");
+					}
 					forwardToLocation("jsp/EditBorrower.jsp", request, response);
 				}
 				else if (control.equals("Update")){
@@ -136,8 +151,6 @@ public class ControllerServlet extends HttpServlet {
 					borrowerB.setlName(request.getParameter("lName"));
 					borrowerB.setEmailId(request.getParameter("email"));
 					borrowerB.setAddress(request.getParameter("address"));
-					borrowerB.setCity(request.getParameter("city"));
-					borrowerB.setState(request.getParameter("state"));
 					borrowerB.setPhone(request.getParameter("phone"));
 					
 					String msg = borrowerDAO.updateBorrower(borrowerB);
@@ -220,6 +233,107 @@ public class ControllerServlet extends HttpServlet {
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
 			
+			
+			if(action.equals("Checkout"))
+			{
+				if(control.equals("getBorrower"))
+				{
+					int cardNo = 0;
+					String errMsg = "";
+					try{
+						cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					}
+					catch(Exception e){
+						errMsg = "Please enter a valid card number";
+						JSONObject json = new JSONObject();
+						json.put("status", false);
+						json.put("errMsg", errMsg);
+						response.setContentType("text/plain");
+					    response.getWriter().write(json.toString());
+					}
+					
+					if (errMsg.equals("")){
+						BorrowerBean borrowB = new BorrowerBean(cardNo);
+						boolean stat = borrowerDAO.viewBorrowerDetails(borrowB);
+						try{
+							JSONObject json = new JSONObject();
+							json.put("status", stat);
+							if (stat == true){
+								json.put("borrowerName", borrowB.getfName() + " " + borrowB.getlName());
+							    json.put("borrowerEmail", borrowB.getEmailId());
+							}
+							else{
+								json.put("borrowerName", "");
+							    json.put("borrowerEmail", "");
+							}
+							
+						    response.setContentType("text/plain");
+						    response.getWriter().write(json.toString());
+						}
+						catch(Exception e){
+							System.out.println(e.getMessage());
+						}
+					}
+				}
+				
+				if (control.equals("Checkout")){
+					String bookId = request.getParameter("bookId");
+					int branchId = Integer.parseInt(request.getParameter("branchId"));
+					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					String errMsg = "";
+					
+					while(true){
+						
+						//Check borrower status
+						BorrowerBean borrowB = new BorrowerBean(cardNo);
+						boolean stat = borrowerDAO.viewBorrowerDetails(borrowB);
+						if (stat != true){
+							//Send an card number does not exists
+							break;
+						}
+						
+						//Check book copy availability from the branch requested
+						BookBean bookB = new BookBean(bookId);
+						LibraryBranchBean branchB = new LibraryBranchBean(branchId);
+						int copies = checkoutDAO.verifyAvailableCopies(bookB, branchB); 
+						System.out.println("Total Copies available : " + copies);
+						if (copies <= 0){
+							errMsg = "Sorry! There are no copies available to checkout in Branch : " + branchB.getBranchName();
+							request.setAttribute("errMsg", errMsg);
+							forwardToLocation("jsp/CheckoutFailed.jsp", request, response);
+							break;
+						}
+						
+						//Check if the total no.of checked out books is gt 3
+						int checkedCopies = checkoutDAO.getTotalCheckedOutCopies(borrowB.getCardNo());
+						System.out.println("Total checked out book for card no:" + borrowB.getCardNo() + " is : " + checkedCopies );
+						if (checkedCopies >= 3){
+							errMsg = "Sorry! The selected borrower with Card No. " + borrowB.getCardNo() + " has " + checkedCopies +  " books already checked out";
+							request.setAttribute("errMsg", errMsg);
+							forwardToLocation("jsp/CheckoutFailed.jsp", request, response);
+							break;
+						}
+						
+						//Checkout Process starts
+						/** Insert into the book_loans table**/ 
+						BookLoansBean loanB = new BookLoansBean();
+						loanB.setBookId(bookB.getBookId());
+						loanB.setBranchId(branchB.getBranchID());
+						loanB.setCardNo(borrowB.getCardNo());
+						int loanId = checkoutDAO.createCheckout(loanB, copies);
+						
+						if (loanId > 0){
+							request.setAttribute("bookB", bookB);
+							request.setAttribute("branchB", branchB);
+							request.setAttribute("borrowB", borrowB);
+							request.setAttribute("loanB", loanB);
+							forwardToLocation("jsp/CheckoutSuccess.jsp", request, response);
+						}
+						break;
+					}
+				}
+			}
+			
 			if(action.equals("borrowerListNext"))
 			{
 				forwardToLocation("jsp/ListBorrower.jsp", request, response);
@@ -249,7 +363,12 @@ public class ControllerServlet extends HttpServlet {
 			{
 				forwardToLocation("jsp/ListBranch.jsp", request, response);
 			}
+			
+			/** Testing code for prints */
+			if(action.equals("test"))
+			{
 				
+			}
 			
 		}
 		catch(Exception e)

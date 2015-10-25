@@ -2,6 +2,9 @@
     <wb-module deploy-name="LibraryManagement">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="java-json.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/venkat/Documents/workspace/LibraryManagement_noTemplate/WebContent/WEB-INF/lib/java-json.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="LibraryManagement"/>
         <property name="java-output-path" value="/LibraryManagement/build/classes"/>
     </wb-module>

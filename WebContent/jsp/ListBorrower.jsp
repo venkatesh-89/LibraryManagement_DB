@@ -40,7 +40,7 @@
 		}
 		int a = 0,b = 0, i = 0, j = 0;  // Declaring the i outside for loop to show current position
 		%>
-		<table align="center" style="font-size: 16px;text-align: center;" border=1>
+		<table style="font-size: 16px;text-align: center;" border=1>
 		<tr>
 		<th width=50px>Sr.No</th>
 		<th width=200px>Library Card No</th>

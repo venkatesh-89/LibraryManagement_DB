@@ -17,7 +17,7 @@
 		{
 			BorrowerBean borrowerB = (BorrowerBean) request.getAttribute("borrowerB");
 		%>
-			<table style="font-size: 16px; margin-left: 50px;" border=0>
+			<table style="font-size: 16px; margin-left: 50px;" >
 			<tr>
 			<th>Library Card No</th>
 			<td><%=borrowerB.getCardNo() %></td>
@@ -39,14 +39,6 @@
 			<td><%=borrowerB.getAddress() %></td>
 			</tr>
 			<tr>
-			<th>City</th>
-			<td><%=borrowerB.getCity() %></td>
-			</tr>
-			<tr>
-			<th>State</th>
-			<td><%=borrowerB.getState() %></td>
-			</tr>
-			<tr>
 			<th>Phone</th>
 			<td><%=borrowerB.getPhone() %></td>
 			</tr>
@@ -63,6 +55,11 @@
 			</tr>
 			</table>
 <%		
+	}
+	else{
+%>		
+		<h3 style="color:red;">Record could not be found!</h3>
+<%
 	}
 %>
 </form>

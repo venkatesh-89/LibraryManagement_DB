@@ -16,9 +16,20 @@
 	border: 1;
 }
 
-.bookTitle{
-	text-align: left;
+.title {
+  text-align: left;
+  width: 30em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.author {
+  text-align: left;
+  width: 15em;
+  #white-space: nowrap;
+}
+
 </style>
 	    
 <title>Search Book</title>	    
@@ -38,8 +49,8 @@
 <tr>
 <td><input type="text" name="searchBook" size="30" value="Enter Book ID/ Title/ Author" onfocus="if(value == 'Enter Book ID/ Title/ Author'){value = '';}" /></td>
 <td><select name="searchCriteria">
-  <option value="" default>Select Search Criteria</option>
-  <option value="bookId">Book ID</option>
+  <option value="">Select Search Criteria</option>
+  <option value="bookId" >Book ID</option>
   <option value="bookTitle">Book Title</option>
   <option value="authorName">Author Name</option>
   <option value="anyCriteria">Any Criteria</option>
@@ -60,12 +71,11 @@
 		<table class="dataTable" border=1>
 		<tr>
 		<th width=50px>Sr.no</th>
-		<!--th>Action</th>-->
 		<th width=100px>Book ID</th>
-		<th width=400px>Title</th>
+		<th width=200px>Title</th>
 		<th width=200px>Author(s)</th>
 		<th width=100px>Action</th>
-		<th width=50px>Cart</th>
+		<th width=50px>Checkout</th>
 		</tr>
 		
 <%		ArrayList<BookBean> arrBookSearchList = (ArrayList<BookBean>) session.getAttribute("BookSearchList");
@@ -88,18 +98,19 @@
 					<td><%=i+1 %></td>
 					
 					<td><a href="<%=context %>/ctr?action=Book&control=View&bookId=<%=bookB.getBookId() %>"><%=bookB.getBookId() %></a></td>
-					<td class="bookTitle"><%=bookB.getBookTitle() %></td>
+					<td><div class="title"><%=bookB.getBookTitle() %></div></td>
 					<%--for (String author : bookB.getAuthorBean().getAuthorList()){
 						if (tempAuthors == "") { tempAuthors = author; }
 						else { tempAuthors += ", " + author; } 
 					}
 					--%>
-					<td><%=bookB.getAuthorBean().toString() %></td>
+					<td><div class="author"><%=bookB.getAuthorBean().toString() %></div></td>
 					<td><a href="<%=context %>/ctr?action=Book&control=Edit&bookId=<%=bookB.getBookId() %>">Edit</a> || 
 						<a href="<%=context %>/ctr?action=Book&control=Delete&bookId=<%=bookB.getBookId() %>"
 							onclick="return confirm('Are you sure you want to delete?');">Delete</a>
 					</td>
-					<td><input type="button" value="Add to Cart"/></td>
+					<td><input type="button" value="View Copies" 
+					onclick="window.location.href='<%=context%>/ctr?action=Book&control=ViewCopies&bookId=<%=bookB.getBookId()%>'"/></td>
 				</tr>
 <%			} 
 %>

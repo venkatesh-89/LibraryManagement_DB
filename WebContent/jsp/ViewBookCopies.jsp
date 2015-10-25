@@ -3,7 +3,7 @@
 <%@page import="bean.BookBean" %>
 <%@page import="bean.BookCopiesBean" %>
 
-    <title>View Book Details</title>
+    <title>View Book Copies</title>
     
     <%@include file="include/headerLinks.jsp" %>
     
@@ -11,7 +11,7 @@
     
     	<div class="section_w920">
     	
-    	<h2>Book Details :</h2><br/>
+    	<h2>Book Copies :</h2><br/>
     	
 <form name="viewBook" action="<%=context %>/ctr">
 	<%if(request.getAttribute("bookB")!=null)
@@ -31,18 +31,6 @@
 			<th>Authors</th>
 			<td><%=bookB.getAuthorBean().toString() %></td>
 			</tr>
-			
-			<tr>
-			<td align="right"><br/>
-			<input type="submit" name="control" value="Edit"/>
-			<input type="hidden" name="action" value="Book" />
-			<input type="hidden" name="bookId" value="<%=bookB.getBookId() %>" />
-			</td><td><br/>
-			<input type="submit" name="control" value="Delete" onclick="return confirm('Are you sure you want to delete?');"/></td>
-			</tr>
-			<!-- tr>
-			<td colspan="2"><br/><span style="margin-left: 90px;"><input type="button" name="cancel" value="Back" onclick="window.location.href='<%=context %>/jsp/Home.jsp'" /></span></td>
-			</tr-->
 			</table>
 			<%	
 			if (request.getAttribute("arrListBookCopiesB") != null) {

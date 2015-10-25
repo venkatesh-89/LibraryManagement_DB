@@ -6,7 +6,13 @@ public class BookCopiesBean {
 	private int branchId;
 	private int noOfCopies;
 	private int copiesAvailable;
+	private String branchName;
 	
+	public BookCopiesBean(){}
+	
+	public BookCopiesBean(String bookId){
+		this.bookId = bookId;
+	}
 	
 	public String getBookId() {
 		return bookId;
@@ -33,6 +39,11 @@ public class BookCopiesBean {
 		this.copiesAvailable = copiesAvailable;
 	}
 	
-	
+	public String getBranchName() {
+		return branchName;
+	}
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
 
 }

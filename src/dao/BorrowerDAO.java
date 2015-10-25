@@ -28,17 +28,14 @@ public class BorrowerDAO extends GenericDAO{
 							"where fname = ? and " +
 							"lname = ? and " + 
 							"email = ? and " +
-							"address = ? and " +
-							"city = ? and " +
-							"state = ?";
+							"address = ?";
 			
 			prepStmnt = conn.prepareStatement(query);
 			prepStmnt.setString(1, borrowerB.getfName());
 			prepStmnt.setString(2, borrowerB.getlName());
 			prepStmnt.setString(3, borrowerB.getEmailId());
 			prepStmnt.setString(4, borrowerB.getAddress());
-			prepStmnt.setString(5, borrowerB.getCity());
-			prepStmnt.setString(6, borrowerB.getState());
+			
 			rs = prepStmnt.executeQuery();
 			
 			if (rs.next()){
@@ -57,7 +54,7 @@ public class BorrowerDAO extends GenericDAO{
 				card_no = rs.getInt(1) + 1;
 			}
 			System.out.println(card_no);
-			query = "Insert into borrower (card_no, fname, lname, email, address, city, state, phone) values (?,?,?,?,?,?,?,?)";
+			query = "Insert into borrower (card_no, fname, lname, email, address, phone) values (?,?,?,?,?,?)";
 			
 			prepStmnt2 = conn.prepareStatement(query);
 			prepStmnt2.setInt(1, card_no);
@@ -65,9 +62,7 @@ public class BorrowerDAO extends GenericDAO{
 			prepStmnt2.setString(3, borrowerB.getlName());
 			prepStmnt2.setString(4, borrowerB.getEmailId());
 			prepStmnt2.setString(5, borrowerB.getAddress());
-			prepStmnt2.setString(6, borrowerB.getCity());
-			prepStmnt2.setString(7, borrowerB.getState());
-			prepStmnt2.setString(8, borrowerB.getPhone());
+			prepStmnt2.setString(6, borrowerB.getPhone());
 			
 			prepStmnt2.executeUpdate();
 			conn.commit();
@@ -85,16 +80,17 @@ public class BorrowerDAO extends GenericDAO{
 	}
 
 	
-	public BorrowerBean viewBorrowerDetails(BorrowerBean borrowerB) throws Exception{
+	public boolean viewBorrowerDetails(BorrowerBean borrowerB) throws Exception{
 		log = log.getLogger("BorrowerDAO : viewBorrowerDetails()");
 		
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
 		ResultSet rs = null;
+		boolean status = false;
 		
 		try{
 			conn = getConnection();
-			String query = "Select card_no, fName, lName, email, address, city, state, phone " +
+			String query = "Select card_no, fName, lName, email, address, phone " +
 							"from borrower where card_no = ?";
 			
 			prepStmnt = conn.prepareStatement(query);
@@ -102,14 +98,13 @@ public class BorrowerDAO extends GenericDAO{
 			rs = prepStmnt.executeQuery();
 			
 			while (rs.next()) {
+				status = true;
 				borrowerB.setfName(rs.getString(2));
 				borrowerB.setlName(rs.getString(3));
 				borrowerB.setEmailId(rs.getString(4));
 				borrowerB.setAddress(rs.getString(5));
-				borrowerB.setCity(rs.getString(6));
-				borrowerB.setState(rs.getString(7));
-				borrowerB.setPhone(rs.getString(8));
-				
+				borrowerB.setPhone(rs.getString(6));
+				break;
 			}
 			
 		}
@@ -120,7 +115,7 @@ public class BorrowerDAO extends GenericDAO{
 			closeConnection(rs, prepStmnt, conn);
 		}
 		
-		return borrowerB;
+		return status;
 	}
 	
 	
@@ -133,7 +128,7 @@ public class BorrowerDAO extends GenericDAO{
 		
 		try{
 			conn = getConnection();
-			String query = "Update borrower set fName = ?, lName = ?, email = ?, address = ?, city = ?, state = ?, phone = ? " +
+			String query = "Update borrower set fName = ?, lName = ?, email = ?, address = ?, phone = ? " +
 							"where card_no = ?";
 			
 			prepStmnt = conn.prepareStatement(query);
@@ -141,10 +136,8 @@ public class BorrowerDAO extends GenericDAO{
 			prepStmnt.setString(2, borrowerB.getlName());
 			prepStmnt.setString(3, borrowerB.getEmailId());
 			prepStmnt.setString(4, borrowerB.getAddress());
-			prepStmnt.setString(5, borrowerB.getCity());
-			prepStmnt.setString(6, borrowerB.getState());
-			prepStmnt.setString(7, borrowerB.getPhone());
-			prepStmnt.setInt(8, borrowerB.getCardNo());
+			prepStmnt.setString(5, borrowerB.getPhone());
+			prepStmnt.setInt(6, borrowerB.getCardNo());
 			
 			prepStmnt.executeUpdate();
 			conn.commit();
@@ -193,7 +186,7 @@ public class BorrowerDAO extends GenericDAO{
 		try
 		{
 			conn = getConnection();
-			String query = "Select card_no, fName, lName, email, address, city, state, phone " +
+			String query = "Select card_no, fName, lName, email, address, phone " +
 							"from borrower order by card_no asc";
 			
 			prepStmnt = conn.prepareStatement(query);
@@ -209,9 +202,7 @@ public class BorrowerDAO extends GenericDAO{
 				borrowerB.setlName(rs.getString(3));
 				borrowerB.setEmailId(rs.getString(4));
 				borrowerB.setAddress(rs.getString(5));
-				borrowerB.setCity(rs.getString(6));
-				borrowerB.setState(rs.getString(7));
-				borrowerB.setPhone(rs.getString(8));
+				borrowerB.setPhone(rs.getString(6));
 				
 				arrBorrowerList.add(borrowerB);
 			}

@@ -114,7 +114,6 @@ public class BranchDAO extends GenericDAO{
 		String msg = "Update successful";
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
-		ResultSet rs = null;
 		
 		try{
 			conn = getConnection();
@@ -143,7 +142,6 @@ public class BranchDAO extends GenericDAO{
 		String msg = "Delete Successful";
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
-		ResultSet rs = null;
 		
 		try{
 			conn = getConnection();

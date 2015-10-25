@@ -1,7 +1,7 @@
 <%@include file="include/header1.jsp" %>
  
  <title>Home</title>
-        
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>        
   	<%@include file="include/headerLinks.jsp" %>
     
       <div id="templatemo_content">
@@ -29,6 +29,17 @@
         	<ul>
         	<li> <a href="<%=context%>/jsp/NewBranch.jsp">Add a new Branch </a></li>
         	<li> <a href="<%=context%>/ctr?action=Branch&control=ViewAll">View all Branches </a></li>
+        	</ul>
+        	
+        	<p>Check-in Books : </p>
+        	<ul>
+        	<li> <a href="<%=context%>/ctr?action=test">Check-in a book </a></li>
+        	<li> <a href="<%=context%>/ctr?action=test">View & Pay Fines </a></li>
+        	</ul>
+        	
+        	<p>Testing Codes : </p>
+        	<ul>
+        	<li> <a href="<%=context%>/ctr?action=test">Date Test print </a></li>
         	</ul>
         </div>
         

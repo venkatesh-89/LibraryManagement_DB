@@ -61,7 +61,7 @@ public class BookDAO extends GenericDAO
 		return true;
 	}
 	
-	public BookBean viewBookDetails(BookBean bookB) throws Exception{
+	public BookBean viewBookDetails(BookBean bookB, ArrayList<BookCopiesBean> arrListBookCopiesB) throws Exception{
 		log = log.getLogger("BookDAO : viewBookDetails()");
 		
 		Connection conn = null;
@@ -88,20 +88,20 @@ public class BookDAO extends GenericDAO
 			
 			rs.close();
 			
-			query = "Select book_id, branch_id, no_of_copies, copies_available " +
-					"from book_copies " +
-					"where book_id = \"" + bookB.getBookId() + "\"";
+			query = "Select book_copies.branch_id, branch_name, no_of_copies, copies_available " +
+					"from book_copies, library_branch " +
+					"where book_copies.branch_id = library_branch.branch_id " +
+					"and book_id = \"" + bookB.getBookId() + "\" " + 
+					"order by 1";
 			
 			prepStmnt2 = conn.prepareStatement(query);
 			rs = prepStmnt2.executeQuery();
 			
-			ArrayList<BookCopiesBean> arrListBookCopiesB = new ArrayList<BookCopiesBean>();
-			
 			while(rs.next()){
-				BookCopiesBean bookCopyB = new BookCopiesBean();
+				BookCopiesBean bookCopyB = new BookCopiesBean(bookB.getBookId());
 				
-				bookCopyB.setBookId(rs.getString(1));
-				bookCopyB.setBranchId(rs.getInt(2));
+				bookCopyB.setBranchId(rs.getInt(1));
+				bookCopyB.setBranchName(rs.getString(2));
 				bookCopyB.setNoOfCopies(rs.getInt(3));
 				bookCopyB.setCopiesAvailable(rs.getInt(4));
 				
@@ -115,7 +115,7 @@ public class BookDAO extends GenericDAO
 		return bookB;
 	}
 	
-	
+	//not completed
 	public String updateBookDetails(BookBean bookB) throws Exception{
 		log = log.getLogger("BookDAO : deleteBook()");
 		String msg = "";

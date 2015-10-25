@@ -30,17 +30,7 @@
 		</tr>
 		<tr>
 			<th>Address</th>
-			<td><input name="address" type="text" maxlength="100"/> </td>
-			<td></td>
-		</tr>
-		<tr>
-			<th>City</th>
-			<td><input name="city" type="text" maxlength="50"/> </td>
-			<td></td>
-		</tr>
-		<tr>
-			<th>State</th>
-			<td><input name="state" type="text" maxlength="50"/> </td>
+			<td><textarea name="address" rows=4 cols=20 maxlength="100"></textarea> </td>
 			<td></td>
 		</tr>
 		<tr>

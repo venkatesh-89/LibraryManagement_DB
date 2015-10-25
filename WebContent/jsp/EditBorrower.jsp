@@ -36,17 +36,7 @@
 		</tr>
 		<tr>
 			<th>Address</th>
-			<td><input name="address" type="text" maxlength="100" value="<%=borrowerB.getAddress() %>"/> </td>
-			<td></td>
-		</tr>
-		<tr>
-			<th>City</th>
-			<td><input name="city" type="text" maxlength="50" value="<%=borrowerB.getCity() %>"/> </td>
-			<td></td>
-		</tr>
-		<tr>
-			<th>State</th>
-			<td><input name="state" type="text" maxlength="50" value="<%=borrowerB.getState() %>"/> </td>
+			<td><textarea name="address" maxlength="100" rows=4 cols=20><%=borrowerB.getAddress() %> </textarea> </td>
 			<td></td>
 		</tr>
 		<tr>
