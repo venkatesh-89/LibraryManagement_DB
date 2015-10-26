@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.PersistenceProperty;
+
 import org.apache.log4j.Logger;
 
 import bean.*;
@@ -124,7 +126,7 @@ public class CheckoutDAO extends GenericDAO{
 			
 			prepStmnt.executeUpdate();
 			
-			updateBookCopies(conn, loanB.getBookId(), loanB.getBranchId(), copies);
+			updateBookCopies(conn, loanB.getBookId(), loanB.getBranchId(), copies, true);
 			
 			conn.commit();
 			
@@ -139,7 +141,85 @@ public class CheckoutDAO extends GenericDAO{
 		return loanB.getLoanId();
 			
 	}
+	
+	
+	public boolean createCheckIn(BookLoansBean loanB, String dateIn, int copies) throws Exception{
+		log = log.getLogger("CheckoutDAO : createCheckIn()");
 		
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		ResultSet rs = null;
+		boolean stat = true;
+		
+		try{
+			conn = getConnection();
+			
+			loanB.setDateIn(dateIn);
+			
+			String query = "Update book_loans set date_in = ? where loan_id = ?";
+			
+			prepStmnt = conn.prepareStatement(query);
+			
+			prepStmnt.setString(1, loanB.getDateIn());
+			prepStmnt.setInt(2, loanB.getLoanId());
+			
+			prepStmnt.executeUpdate();
+			
+			updateBookCopies(conn, loanB.getBookId(), loanB.getBranchId(), copies, false);
+			
+			conn.commit();
+			
+		}catch(Exception e){
+			log.error(e.getMessage());
+			stat = false;
+		}
+		return stat;
+	}
+	
+	
+	public int getCopiesForCheckin(BookLoansBean loanB) throws Exception{
+		log = log.getLogger("CheckoutDAO : getCopiesForCheckin()");
+		
+		Connection conn = null;
+		PreparedStatement prepStmnt = null;
+		ResultSet rs = null;
+		int copies = 0;
+		
+		try{
+			conn = getConnection();
+			
+			String query = "Select loan_id, book_loans.book_id, book_loans.branch_id, card_no, date_out, due_date, date_in, copies_available " +
+						 	"from book_loans, book_copies " +
+						 	"where book_loans.book_id = book_copies.book_id " +
+						 	"and book_loans.branch_id = book_copies.branch_id " +
+						 	"and loan_id = ?";
+			
+			prepStmnt = conn.prepareStatement(query);
+			prepStmnt.setInt(1, loanB.getLoanId());
+			
+			rs = prepStmnt.executeQuery();
+			
+			while(rs.next()){
+				loanB.setBookId(rs.getString(2));
+				loanB.setBranchId(rs.getInt(3));
+				loanB.setCardNo(rs.getInt(4));
+				loanB.setDateOut(getDateValue(rs.getString(5), dtbs_to_date));
+				loanB.setDateOut(getDateValue(rs.getString(6), dtbs_to_date));
+				String date_in = rs.getString(7);
+				if (date_in == "" || date_in == null){
+					loanB.setDateIn(date_in);
+				}
+				else{
+					loanB.setDateIn(getDateValue(date_in,dtbs_to_date));
+				}
+				copies = rs.getInt(8);
+			}
+			
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
+		return copies;
+	}
 	
 	private int getNextLoanId(Connection conn){
 		log = log.getLogger("CheckoutDAO : getNextLoanId()");
@@ -194,12 +274,17 @@ public class CheckoutDAO extends GenericDAO{
 	
 	
 	
-	private void updateBookCopies(Connection conn, String bookId, int branchId, int copies){
+	private void updateBookCopies(Connection conn, String bookId, int branchId, int copies, boolean checkout){
 		log = log.getLogger("CheckoutDAO : updateBookCopies()");
 		PreparedStatement prepStmnt = null;
 		
 		try{
-			copies --;
+			
+			if (checkout == true){
+				copies --;
+			}else{
+				copies ++;
+			}
 			String query = "update book_copies set copies_available = ? where book_id = ? and branch_id = ?";
 			prepStmnt = conn.prepareStatement(query);
 			prepStmnt.setInt(1, copies);

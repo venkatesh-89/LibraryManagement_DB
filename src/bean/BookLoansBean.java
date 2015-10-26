@@ -1,10 +1,5 @@
 package bean;
 
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-
 public class BookLoansBean {
 
 	
@@ -15,6 +10,12 @@ public class BookLoansBean {
 	private String dateOut;
 	private String dueDate;
 	private String dateIn;
+	
+	public BookLoansBean(){};
+	
+	public BookLoansBean(int loanId){
+		this.loanId = loanId;
+	}
 	
 	
 	public int getLoanId() {
@@ -60,5 +61,15 @@ public class BookLoansBean {
 		this.dateIn = dateIn;
 	}
 
-	
+	public String toString(){
+		String str = this.loanId + ", " +
+					this.bookId + ", " +
+					this.branchId + ", " +
+					this.cardNo + ", " +
+					this.dateOut + ", " +
+					this.dueDate + ", " +
+					this.dateIn;
+		
+		return str;
+	}
 }

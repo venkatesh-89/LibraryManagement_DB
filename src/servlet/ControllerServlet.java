@@ -40,6 +40,7 @@ public class ControllerServlet extends HttpServlet {
 		BorrowerDAO borrowerDAO = new BorrowerDAO();
 		BranchDAO branchDAO = new BranchDAO();
 		CheckoutDAO checkoutDAO = new CheckoutDAO();
+		BookLoansDAO loanDAO = new BookLoansDAO();
 		
 		Logger log = null;
 		log = log.getLogger("Controller Servlet");
@@ -84,7 +85,7 @@ public class ControllerServlet extends HttpServlet {
 				if (control.equals("Delete")){
 					String msg = bookDAO.deleteBook(bookB);
 					request.setAttribute("msg", msg);
-					System.out.println(msg + '\n' +request.getContextPath());
+					System.out.println(msg + '\n' + request.getContextPath());
 					//forwardToLocation(, request, response);
 				}
 				else if (control.equals("Update")){
@@ -233,6 +234,25 @@ public class ControllerServlet extends HttpServlet {
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
 			
+			if(action.equals("SearchLoans"))
+			{
+				session.setAttribute("LoanSearchList",null);
+				
+				String bookId = request.getParameter("searchBookId") == null ? "" : request.getParameter("searchBookId");
+				String cardNo = request.getParameter("searchCardNo") == null ? "" : request.getParameter("searchCardNo");
+				String borrowerName = request.getParameter("searchBorrowerName") == null ? "" : request.getParameter("searchBorrowerName");
+				
+				ArrayList<BookLoansBean> arrSearchList = loanDAO.getSearchLoanList(bookId, cardNo, borrowerName);
+				if(arrSearchList.size()!=0)
+				{
+					if(session.getAttribute("LoanSearchList")==null)
+					{
+						session.setAttribute("LoanSearchList", arrSearchList);
+					}
+				}
+				session.setAttribute("searchLoan", null);
+				forwardToLocation("jsp/SearchLoans.jsp", request, response);
+			}
 			
 			if(action.equals("Checkout"))
 			{
@@ -334,6 +354,131 @@ public class ControllerServlet extends HttpServlet {
 				}
 			}
 			
+			if(action.equals("Check_in")){
+				if(control.equals("View")){
+					int loanId = Integer.parseInt(request.getParameter("LoanId"));
+					
+					BookLoansBean loanB = new BookLoansBean(loanId);
+					loanB = loanDAO.getLoanDetails(loanB);
+					
+					BookBean bookB = new BookBean(loanB.getBookId());
+					bookB = bookDAO.viewBookDetails(bookB, null);
+					
+					LibraryBranchBean branchB = new LibraryBranchBean(loanB.getBranchId());
+					branchB = branchDAO.viewBranchDetails(branchB);
+					
+					BorrowerBean borrowerB = new BorrowerBean(loanB.getCardNo());
+					borrowerDAO.viewBorrowerDetails(borrowerB);
+					
+					request.setAttribute("bookB", bookB);
+					request.setAttribute("branchB", branchB);
+					request.setAttribute("borrowB", borrowerB);
+					request.setAttribute("loanB", loanB);
+					forwardToLocation("jsp/Check_in.jsp", request, response);
+				}
+				
+				if (control.equals("Check-In Book")){
+					String dateIn = request.getParameter("dateIn");
+					System.out.println(dateIn);
+					int loanId = Integer.parseInt(request.getParameter("loanId"));
+					
+					BookLoansBean loanB = new BookLoansBean(loanId);
+					int copies = checkoutDAO.getCopiesForCheckin(loanB);
+					
+					boolean stat = checkoutDAO.createCheckIn(loanB, dateIn, copies);
+					String Msg = "Check-in was successful for borrower with Card No. " + loanB.getCardNo();
+					request.setAttribute("Msg", Msg);
+					forwardToLocation("jsp/CheckinSuccess.jsp", request, response);
+				}
+			}
+			
+			
+			if (action.equals("Fines")){
+				if (control.equals("Calculate")){
+					System.out.println(control);
+					loanDAO.calculateFines();
+					String Msg = "Fines calculated successfully";
+					request.setAttribute("Msg", Msg);
+					forwardToLocation("/jsp/CheckinSuccess.jsp", request, response);
+				}
+				
+				if (control.equals("View")){
+					int cardNo = Integer.parseInt(request.getParameter("searchCardNo"));
+					
+					BorrowerBean borrowB = new BorrowerBean(cardNo);
+					boolean stat = borrowerDAO.viewBorrowerDetails(borrowB);
+					
+					if (stat == true){
+						double fineAmt = loanDAO.viewFineDeatils(cardNo);
+						String errMsg = "";
+						if (fineAmt > 0){
+							int checkedCount = loanDAO.getRemainingBookCount(cardNo);
+							request.setAttribute("checkedCount", checkedCount);
+							if (checkedCount > 0){
+								errMsg = "Please Check-in all books to pay the fine";
+								request.setAttribute("errMsg", errMsg);
+							}
+						}
+						else{
+							errMsg = "No fines to pay for this member";
+							request.setAttribute("errMsg", errMsg);
+						}
+						
+						request.setAttribute("borrowerB", borrowB);
+						request.setAttribute("fineAmt", fineAmt);
+					}
+					else
+						request.setAttribute("noBorrower", "No borrower exists");
+					forwardToLocation("/jsp/SearchFines.jsp", request, response);
+					
+				}
+				
+				if (control.equals("Pay")){
+					int cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					//BorrowerBean borrowB = new BorrowerBean(cardNo);
+					boolean stat = loanDAO.payFine(cardNo);
+					
+					if (stat == true){
+						request.setAttribute("Msg", "Your payment was successful");
+						forwardToLocation("/jsp/CheckinSuccess.jsp", request, response);
+					}
+						
+				}
+				
+				if (control.equals("getOldFineAmt")){
+					int cardNo = 0;
+					String errMsg = "";
+					try{
+						cardNo = Integer.parseInt(request.getParameter("cardNo"));
+					}
+					catch(Exception e){
+						errMsg = "Please enter a valid card number";
+						JSONObject json = new JSONObject();
+						json.put("status", false);
+						json.put("errMsg", errMsg);
+						response.setContentType("text/plain");
+					    response.getWriter().write(json.toString());
+					}
+					
+					if (errMsg.equals("")){
+						
+						double paidFineAmt = loanDAO.getPaidFineAmt(cardNo);
+						try{
+							JSONObject json = new JSONObject();
+							json.put("status", true);
+							json.put("paidFineAmt", paidFineAmt);
+							
+						    response.setContentType("text/plain");
+						    response.getWriter().write(json.toString());
+						}
+						catch(Exception e){
+							System.out.println(e.getMessage());
+						}
+					}
+					
+				}
+			}
+			
 			if(action.equals("borrowerListNext"))
 			{
 				forwardToLocation("jsp/ListBorrower.jsp", request, response);
@@ -362,6 +507,16 @@ public class ControllerServlet extends HttpServlet {
 			if(action.equals("branchListPrevious"))
 			{
 				forwardToLocation("jsp/ListBranch.jsp", request, response);
+			}
+			
+			if(action.equals("searchLoanListNext"))
+			{
+				forwardToLocation("jsp/SearchLoans.jsp", request, response);
+			}
+			
+			if(action.equals("searchLoanListPrevious"))
+			{
+				forwardToLocation("jsp/SearchLoans.jsp", request, response);
 			}
 			
 			/** Testing code for prints */

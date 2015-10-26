@@ -33,13 +33,13 @@
         	
         	<p>Check-in Books : </p>
         	<ul>
-        	<li> <a href="<%=context%>/ctr?action=test">Check-in a book </a></li>
-        	<li> <a href="<%=context%>/ctr?action=test">View & Pay Fines </a></li>
+        	<li> <a href="<%=context%>/jsp/SearchLoans.jsp">Check-in a book </a></li>
         	</ul>
         	
-        	<p>Testing Codes : </p>
+        	<p>Fines : </p>
         	<ul>
-        	<li> <a href="<%=context%>/ctr?action=test">Date Test print </a></li>
+        	<li> <a href="<%=context%>/jsp/SearchFines.jsp">View & Pay Fines </a></li>
+        	<li> <a href="<%=context%>/ctr?action=Fines&control=Calculate">Calculate Fines for Today </a></li>
         	</ul>
         </div>
         

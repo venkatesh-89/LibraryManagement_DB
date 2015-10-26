@@ -1,6 +1,6 @@
 <%@include file="include/header1.jsp" %>
 
- <title>Checkout Failed</title>
+ <title>Success</title>
 
   	<%@include file="include/headerLinks.jsp" %>
     
@@ -8,10 +8,10 @@
     
     	<div class="section_w920"> 
  		
- 		<%if (request.getAttribute("errMsg") != null){ 
- 			String errorMsg = (String) request.getAttribute("errMsg"); %>
+ 		<%if (request.getAttribute("Msg") != null){ 
+ 			String Msg = (String) request.getAttribute("Msg"); %>
  			
-    		<h2 style="color:red;"><%=errorMsg %></h2> 
+    		<h2 style="color:green;"><%=Msg %></h2> 
     	
     	<%} %>
     	

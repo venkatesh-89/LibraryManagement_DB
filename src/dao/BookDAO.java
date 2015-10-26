@@ -88,24 +88,26 @@ public class BookDAO extends GenericDAO
 			
 			rs.close();
 			
-			query = "Select book_copies.branch_id, branch_name, no_of_copies, copies_available " +
-					"from book_copies, library_branch " +
-					"where book_copies.branch_id = library_branch.branch_id " +
-					"and book_id = \"" + bookB.getBookId() + "\" " + 
-					"order by 1";
-			
-			prepStmnt2 = conn.prepareStatement(query);
-			rs = prepStmnt2.executeQuery();
-			
-			while(rs.next()){
-				BookCopiesBean bookCopyB = new BookCopiesBean(bookB.getBookId());
+			if (arrListBookCopiesB != null){
+				query = "Select book_copies.branch_id, branch_name, no_of_copies, copies_available " +
+						"from book_copies, library_branch " +
+						"where book_copies.branch_id = library_branch.branch_id " +
+						"and book_id = \"" + bookB.getBookId() + "\" " + 
+						"order by 1";
 				
-				bookCopyB.setBranchId(rs.getInt(1));
-				bookCopyB.setBranchName(rs.getString(2));
-				bookCopyB.setNoOfCopies(rs.getInt(3));
-				bookCopyB.setCopiesAvailable(rs.getInt(4));
+				prepStmnt2 = conn.prepareStatement(query);
+				rs = prepStmnt2.executeQuery();
 				
-				arrListBookCopiesB.add(bookCopyB);
+				while(rs.next()){
+					BookCopiesBean bookCopyB = new BookCopiesBean(bookB.getBookId());
+					
+					bookCopyB.setBranchId(rs.getInt(1));
+					bookCopyB.setBranchName(rs.getString(2));
+					bookCopyB.setNoOfCopies(rs.getInt(3));
+					bookCopyB.setCopiesAvailable(rs.getInt(4));
+					
+					arrListBookCopiesB.add(bookCopyB);
+				}
 			}
 			
 		}

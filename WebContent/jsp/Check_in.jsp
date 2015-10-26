@@ -11,7 +11,8 @@ td.sep{
 }
 </style>
 
- <title>Success</title>
+
+ <title>Check-in</title>
 
   	<%@include file="include/headerLinks.jsp" %>
     
@@ -30,8 +31,8 @@ td.sep{
     	%>
     	
     	
-    	<h2>Checkout Receipt : </h2>
-    	
+    	<h2>Check-in Details : </h2>
+    	<form name="checkInForm" action="<%=context %>/ctr">
     	<table>
     		<tr>
     			<th>Book Id</th>
@@ -83,11 +84,31 @@ td.sep{
     			<td class="sep">:</td>
     			<td><%=loanB.getDueDate() %></td>
     		</tr>
+    		<tr>
+    			<th>Check-in Date</th>
+    			<td class="sep">:</td>
+    			<td>
+    				<%if (loanB.getDateIn() == "" || loanB.getDateIn() == null){ %>
+    					<input type="date" name="dateIn" />	(Format: MM/dd/yyyy)
+    				<%}else{ %>
+    					<%=loanB.getDateIn() %>
+    				<% 
+    				} %>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td colspan="3" align="center"> <br>
+    				<input type="submit" name="control" value="Check-In Book">
+    				<input type="reset" name="reset" value="Reset">
+    				<input type="hidden" name="action" value="Check_in">
+    				<input type="hidden" name="loanId" value="<%=loanB.getLoanId() %>">
+    			</td>
+    		</tr>
     	</table>
     	
     	<br><br>
     	
-    	<p style="font-size:20px"><i>Thank You</i></p>
+    	</form>
     	<%	
     	}
     	%>
