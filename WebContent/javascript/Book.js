@@ -23,3 +23,14 @@ function validate(){
 		return false;
 	}
 }
+
+
+function searchBookValidate(){
+	
+	var searchText = $('#searchBook').val();
+	
+	if(searchText == ""){
+		alert("Please enter Book ID/ Title/ Author to search");
+		return false;
+	}
+}

@@ -2,7 +2,9 @@
 <%@page import="bean.BookBean"%>
 
 <%@include file="include/header1.jsp" %>
-
+<%@include file="include/headerLinks.jsp" %>
+ 
+ 
 <style>
 .inputTable{
 	font-size: 16px;
@@ -31,23 +33,19 @@
 }
 
 </style>
-	    
+<script type="text/javascript" src="<%=context %>/javascript/Book.js"></script> 	    
 <title>Search Book</title>	    
     
-    <%@include file="include/headerLinks.jsp" %>
-     
       <div id="templatemo_content">
     
     	<div class="section_w920">
-    	<!--
-    	<p style="font-size: 16px;color: black;" align="right">Welcome <b><%=session.getAttribute("userName")%>,</b> <a style="color: yellow;" href="<%=context%>/ctr?action=logout">(Logout)</a></p>
-    	 -->
+    	
     	<h2>Search Book</h2>	
 
-<form method="post" action="<%=context %>/ctr">
+<form method="post" action="<%=context %>/ctr" onsubmit="return searchBookValidate();">
 <table class="inputTable">
 <tr>
-<td><input type="text" name="searchBook" size="30" value="Enter Book ID/ Title/ Author" onfocus="if(value == 'Enter Book ID/ Title/ Author'){value = '';}" /></td>
+<td><input type="text" name="searchBook" id="searchBook" size="30" placeholder="Enter Book ID/ Title/ Author" /></td>
 <td><select name="searchCriteria">
   <option value="bookId" selected>Book ID</option>
   <option value="bookTitle">Book Title</option>
