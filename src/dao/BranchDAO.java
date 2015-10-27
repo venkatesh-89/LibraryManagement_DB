@@ -50,7 +50,7 @@ public class BranchDAO extends GenericDAO{
 			if (rs.next()){
 				branchId = rs.getInt(1) + 1;
 			}
-			System.out.println(branchId);
+			//System.out.println(branchId);
 			query = "Insert into library_branch (branch_id, branch_name, address) values (?,?,?)";
 			
 			prepStmnt2 = conn.prepareStatement(query);

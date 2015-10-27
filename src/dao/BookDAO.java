@@ -51,7 +51,7 @@ public class BookDAO extends GenericDAO
 				query2 += "(\"" + bookId +"\", \"" + authors.trim() + "\")";
 			}
 			
-			System.out.println(query2);
+			//System.out.println(query2);
 			prepStmnt = conn.prepareStatement(query2);
 			prepStmnt.executeUpdate();
 			conn.commit();

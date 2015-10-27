@@ -183,7 +183,7 @@ public class BookLoansDAO extends GenericDAO{
 								if (rs2.getInt(3) == 1){
 									continue;
 								}
-								System.out.println(rs2.getInt(3));
+								//System.out.println(rs2.getInt(3));
 								
 								String query3 = "Update fines set fine_amt = ? where loan_id = ?";
 								prepStmnt3 = conn.prepareStatement(query3);
@@ -205,15 +205,16 @@ public class BookLoansDAO extends GenericDAO{
 						}
 					}catch(Exception e){
 						log.error(e.getMessage());
+						conn.rollback();
 					}
+					conn.commit();
 				}
 				
 			}
 			
-			conn.commit();
-			
 		}catch(Exception e){
 			log.error(e.getMessage());
+			conn.rollback();
 		}
 		finally{
 			closeConnection(rs, prepStmnt, conn);

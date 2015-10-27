@@ -160,7 +160,7 @@ public class CheckoutDAO extends GenericDAO{
 			
 			prepStmnt = conn.prepareStatement(query);
 			
-			prepStmnt.setString(1, loanB.getDateIn());
+			prepStmnt.setString(1, getDateValue(loanB.getDateIn(), date_to_dtbs));
 			prepStmnt.setInt(2, loanB.getLoanId());
 			
 			prepStmnt.executeUpdate();

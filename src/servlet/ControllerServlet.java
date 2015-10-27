@@ -93,7 +93,7 @@ public class ControllerServlet extends HttpServlet {
 					AuthorBean authorB = new AuthorBean(bookB.getBookId());
 					authorB.setAuthorList(request.getParameter("authors"));
 					bookB.setAuthorBean(authorB);
-					System.out.println(bookB.getAuthorBean().toString());
+					//System.out.println(bookB.getAuthorBean().toString());
 					String msg = bookDAO.updateBookDetails(bookB);
 					
 					request.setAttribute("Msg", msg);
@@ -410,7 +410,7 @@ public class ControllerServlet extends HttpServlet {
 			
 			if (action.equals("Fines")){
 				if (control.equals("Calculate")){
-					System.out.println(control);
+					
 					loanDAO.calculateFines();
 					String Msg = "Fines calculated successfully";
 					request.setAttribute("Msg", Msg);

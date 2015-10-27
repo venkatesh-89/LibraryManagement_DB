@@ -53,7 +53,7 @@ public class BorrowerDAO extends GenericDAO{
 			if (rs.next()){
 				card_no = rs.getInt(1) + 1;
 			}
-			System.out.println(card_no);
+			//System.out.println(card_no);
 			query = "Insert into borrower (card_no, fname, lname, email, address, phone) values (?,?,?,?,?,?)";
 			
 			prepStmnt2 = conn.prepareStatement(query);
