@@ -84,17 +84,20 @@ public class ControllerServlet extends HttpServlet {
 
 				if (control.equals("Delete")){
 					String msg = bookDAO.deleteBook(bookB);
-					request.setAttribute("msg", msg);
-					System.out.println(msg + '\n' + request.getContextPath());
-					//forwardToLocation(, request, response);
+					request.setAttribute("Msg", msg);
+					
+					forwardToLocation("/jsp/CheckinSuccess.jsp", request, response);
 				}
 				else if (control.equals("Update")){
 					bookB.setBookTitle(request.getParameter("bookTitle"));
 					AuthorBean authorB = new AuthorBean(bookB.getBookId());
 					authorB.setAuthorList(request.getParameter("authors"));
 					bookB.setAuthorBean(authorB);
-					
+					System.out.println(bookB.getAuthorBean().toString());
 					String msg = bookDAO.updateBookDetails(bookB);
+					
+					request.setAttribute("Msg", msg);
+					forwardToLocation("/jsp/CheckinSuccess.jsp", request, response);
 				}
 				else{
 					ArrayList<BookCopiesBean> arrListBookCopiesB = new ArrayList<BookCopiesBean>();
@@ -120,6 +123,7 @@ public class ControllerServlet extends HttpServlet {
 			
 			if (action.equals("Borrower")){
 				if(control.equals("ViewAll")){
+					clearBorrowerList(request);
 					displayBorrowerListPage(request, response);
 				}
 				else if (control.equals("View")){
@@ -172,6 +176,7 @@ public class ControllerServlet extends HttpServlet {
 			
 			if (action.equals("Branch")){
 				if(control.equals("ViewAll")){
+					clearBranchList(request);
 					displayBranchListPage(request, response);
 				}
 				else if (control.equals("View")){
@@ -230,7 +235,8 @@ public class ControllerServlet extends HttpServlet {
 						session.setAttribute("BookSearchList", arrSearchList);
 					}
 				}
-				session.setAttribute("search", searchText);
+				session.setAttribute("search", searchText );
+				session.setAttribute("searchCriteria", searchCriteria);
 				forwardToLocation("jsp/SearchBook.jsp", request, response);
 			}
 			
@@ -240,9 +246,8 @@ public class ControllerServlet extends HttpServlet {
 				
 				String bookId = request.getParameter("searchBookId") == null ? "" : request.getParameter("searchBookId");
 				String cardNo = request.getParameter("searchCardNo") == null ? "" : request.getParameter("searchCardNo");
-				String borrowerName = request.getParameter("searchBorrowerName") == null ? "" : request.getParameter("searchBorrowerName");
 				
-				ArrayList<BookLoansBean> arrSearchList = loanDAO.getSearchLoanList(bookId, cardNo, borrowerName);
+				ArrayList<BookLoansBean> arrSearchList = loanDAO.getSearchLoanList(bookId, cardNo);
 				if(arrSearchList.size()!=0)
 				{
 					if(session.getAttribute("LoanSearchList")==null)
@@ -250,7 +255,7 @@ public class ControllerServlet extends HttpServlet {
 						session.setAttribute("LoanSearchList", arrSearchList);
 					}
 				}
-				session.setAttribute("searchLoan", null);
+				session.setAttribute("searchLoan", "Book Id: <i>" + bookId + "</i>, Card No : <i>" + cardNo + "</i>");
 				forwardToLocation("jsp/SearchLoans.jsp", request, response);
 			}
 			
@@ -329,6 +334,16 @@ public class ControllerServlet extends HttpServlet {
 						System.out.println("Total checked out book for card no:" + borrowB.getCardNo() + " is : " + checkedCopies );
 						if (checkedCopies >= 3){
 							errMsg = "Sorry! The selected borrower with Card No. " + borrowB.getCardNo() + " has " + checkedCopies +  " books already checked out";
+							request.setAttribute("errMsg", errMsg);
+							forwardToLocation("jsp/CheckoutFailed.jsp", request, response);
+							break;
+						}
+						
+						//Check for unpaid fine amt
+						double fineAmt = loanDAO.viewFineDeatils(borrowB.getCardNo());
+						if (fineAmt > 0){
+							errMsg = "Sorry! The selected borrower with Card No. " + borrowB.getCardNo() + " has $" + fineAmt +  
+									" outstanding.<br>Check-in all books and pay fines to checkout books";
 							request.setAttribute("errMsg", errMsg);
 							forwardToLocation("jsp/CheckoutFailed.jsp", request, response);
 							break;

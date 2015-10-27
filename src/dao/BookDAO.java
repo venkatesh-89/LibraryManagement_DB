@@ -27,11 +27,12 @@ public class BookDAO extends GenericDAO
 			prepStmnt.setString(1, bookId);
 			prepStmnt.setString(2, bookTitle);
 			try{
-				//prepStmnt.executeUpdate();
+				prepStmnt.executeUpdate();
 				conn.commit();
 			}
 			catch(Exception ex){
 				//Send to front end
+				log.error(ex.getMessage());
 				return false;
 			}
 			
@@ -51,9 +52,9 @@ public class BookDAO extends GenericDAO
 			}
 			
 			System.out.println(query2);
-			//prepStmnt2 = conn.prepareStatement(query2);
-			//prepStmnt2.executeUpdate();
-			//conn.commit();
+			prepStmnt = conn.prepareStatement(query2);
+			prepStmnt.executeUpdate();
+			conn.commit();
 		}
 		catch(Exception ex){
 			log.error(ex);
@@ -117,13 +118,14 @@ public class BookDAO extends GenericDAO
 		return bookB;
 	}
 	
-	//not completed
+	
 	public String updateBookDetails(BookBean bookB) throws Exception{
-		log = log.getLogger("BookDAO : deleteBook()");
-		String msg = "";
+		log = log.getLogger("BookDAO : updateBookDetails()");
+		String msg = "Update successful";
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
 		PreparedStatement prepStmnt2 = null;
+		PreparedStatement prepStmnt3 = null;
 		ResultSet rs = null;
 		
 		try{
@@ -131,10 +133,53 @@ public class BookDAO extends GenericDAO
 			String query = "Update book set title = ? " +
 							"where book_id = ?";
 			
-			String query2 = "Update author";
+			prepStmnt = conn.prepareStatement(query);
+			prepStmnt.setString(1, bookB.getBookTitle());
+			prepStmnt.setString(2, bookB.getBookId());
+			
+			prepStmnt.executeUpdate();
+			
+			/**update book_authors start 
+			 * Step 1: Delete existing authors
+			 * Step 2: Insert new authors */
+			
+			String query2 = "Delete from book_authors where book_id = ?";
+			
+			prepStmnt2 = conn.prepareStatement(query2);
+			prepStmnt2.setString(1, bookB.getBookId());
+			
+			prepStmnt2.executeUpdate();
+			
+			String authors = bookB.getAuthorBean().toString();
+			
+			String query3  = "Insert into book_authors (book_id, author_name) values ";
+			
+			if (authors.contains(",")){
+				String[] temp = authors.split(",");
+				for (String author : temp){
+					query3 += "(\"" + bookB.getBookId() +"\", \"" + author.trim() + "\"),";
+				}
+				if (query3.endsWith(",")){
+					query3 = query3.substring(0, query3.length() - 1);
+				}
+			}
+			else{
+				query3 += "(\"" + bookB.getBookId() +"\", \"" + authors.trim() + "\")";
+			}
+			
+			//System.out.println(query3);
+			prepStmnt3 = conn.prepareStatement(query3);
+			prepStmnt3.executeUpdate(); 
+			
+			/** Update author completed
+			 * if successful commit db*/
+			conn.commit();
+			
 		}
 		catch(Exception e){
-			
+			log.error(e.getMessage());
+			msg = "Update Failed: " + e.getMessage();
+			conn.rollback();
 		}
 		
 		return msg;
@@ -142,29 +187,36 @@ public class BookDAO extends GenericDAO
 	
 	public String deleteBook(BookBean bookB) throws Exception{
 		log = log.getLogger("BookDAO : deleteBook()");
-		String msg = "";
+		String msg = "Delete Successful";
 		Connection conn = null;
 		PreparedStatement prepStmnt = null;
 		PreparedStatement prepStmnt2 = null;
+		PreparedStatement prepStmnt3 = null;
+		PreparedStatement prepStmnt4 = null;
 		ResultSet rs = null;
 		
 		try{
 			conn = getConnection();
 			
-			String query = "Delete from book_authors where book_id = ?";
+			String query = "Delete from book_loans where book_id = ?";
 			prepStmnt = conn.prepareStatement(query);
 			prepStmnt.setString(1, bookB.getBookId());
 			prepStmnt.executeUpdate();
 			
-			String query2 = "Delete from book_copies where book_id = ?";
+			String query2 = "Delete from book_authors where book_id = ?";
 			prepStmnt2 = conn.prepareStatement(query2);
 			prepStmnt2.setString(1, bookB.getBookId());
 			prepStmnt2.executeUpdate();
 			
-			String query3 = "Delete from book where book_id = ?";
-			prepStmnt2 = conn.prepareStatement(query3);
-			prepStmnt2.setString(1, bookB.getBookId());
-			prepStmnt2.executeUpdate();
+			String query3 = "Delete from book_copies where book_id = ?";
+			prepStmnt3 = conn.prepareStatement(query3);
+			prepStmnt3.setString(1, bookB.getBookId());
+			prepStmnt3.executeUpdate();
+			
+			String query4 = "Delete from book where book_id = ?";
+			prepStmnt4 = conn.prepareStatement(query4);
+			prepStmnt4.setString(1, bookB.getBookId());
+			prepStmnt4.executeUpdate();
 			conn.commit();
 		}
 		catch (Exception e){

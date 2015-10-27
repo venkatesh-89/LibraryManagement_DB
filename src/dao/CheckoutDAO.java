@@ -262,7 +262,7 @@ public class CheckoutDAO extends GenericDAO{
 	
 	
 	private void getDates(BookLoansBean loanB){
-		log = log.getLogger("CheckoutDAO : getDates()");
+		log = log.getLogger("CheckoutDAO : createCheckout:getDates()");
 		
 		try{
 			loanB.setDateOut(getCurrentDate());

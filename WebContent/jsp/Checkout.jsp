@@ -1,7 +1,7 @@
 <%@include file="include/header1.jsp" %>
+<%@include file="include/headerLinks.jsp" %>
 
-    <title>Checkout Book</title>
- <style>
+<style>
 th{
 	text-align:right;
 }
@@ -38,7 +38,7 @@ $(document).ready(function() {
 });
 </script>
    
-    <%@include file="include/headerLinks.jsp" %>
+   <title>Checkout Book</title>
     
       <div id="templatemo_content">
     
@@ -64,8 +64,8 @@ $(document).ready(function() {
 			<tr>
 			<th>Card No</th>
 			<td class="sep"> : </td>
-			<td><input type="text" name="cardNo" id="cardNo" maxLength="10"/></td>
-			<td><input type="button" name="getBorrowerBtn" id="getBorrowerBtn" value="Get Borrower Details" /></td>
+			<td><input type="text" name="cardNo" id="cardNo" maxLength="10"/>
+			<input type="button" name="getBorrowerBtn" id="getBorrowerBtn" value="Get Borrower Details" /></td>
 			</tr>
 			<tr ng-hide="">
 			<th>Borrower Name</th>

@@ -49,8 +49,7 @@
 <tr>
 <td><input type="text" name="searchBook" size="30" value="Enter Book ID/ Title/ Author" onfocus="if(value == 'Enter Book ID/ Title/ Author'){value = '';}" /></td>
 <td><select name="searchCriteria">
-  <option value="">Select Search Criteria</option>
-  <option value="bookId" >Book ID</option>
+  <option value="bookId" selected>Book ID</option>
   <option value="bookTitle">Book Title</option>
   <option value="authorName">Author Name</option>
   <option value="anyCriteria">Any Criteria</option>
@@ -62,10 +61,11 @@
 </form>
 <%if(session.getAttribute("BookSearchList")!=null)
 	{
-		if(session.getAttribute("search")!=null)
+		if(session.getAttribute("search")!=null && session.getAttribute("searchCriteria") !=null )
 		{
 %>
-		<font style="margin-left: 20px;font-size: 16px;color: blue;">Search results for <b><i><%=(String)session.getAttribute("search") %></i></b> :</font>
+		<font style="margin-left: 20px;font-size: 16px;color: blue;">Search results for <b><i><%=(String)session.getAttribute("search") %></i></b> :</font><br>
+		<font style="margin-left: 20px;font-size: 16px;color: black;">Search Criteria : <b><%=(String)session.getAttribute("searchCriteria") %></b></font>
 <%		} 
 %>
 		<table class="dataTable" border=1>
@@ -107,7 +107,7 @@
 					<td><div class="author"><%=bookB.getAuthorBean().toString() %></div></td>
 					<td><a href="<%=context %>/ctr?action=Book&control=Edit&bookId=<%=bookB.getBookId() %>">Edit</a> || 
 						<a href="<%=context %>/ctr?action=Book&control=Delete&bookId=<%=bookB.getBookId() %>"
-							onclick="return confirm('Are you sure you want to delete?');">Delete</a>
+							onclick="return confirm('Are you sure you want to delete?\nThis will cascade delete all entries in library schema');">Delete</a>
 					</td>
 					<td><input type="button" value="View Copies" 
 					onclick="window.location.href='<%=context%>/ctr?action=Book&control=ViewCopies&bookId=<%=bookB.getBookId()%>'"/></td>

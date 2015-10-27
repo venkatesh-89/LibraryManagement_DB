@@ -1,7 +1,7 @@
 <%@page import="java.util.ArrayList" %>
 <%@page import="bean.LibraryBranchBean" %>
 <%@include file="include/header1.jsp" %>  
-<title>Borrower List</title>  
+<title>Library Branch List</title>  
 
 	<%@include file="include/headerLinks.jsp" %>
       <div id="templatemo_content">

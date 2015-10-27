@@ -19,7 +19,7 @@ public class BookLoansDAO extends GenericDAO{
 	
 	public static double finePerDay = 0.25;
 	
-	public ArrayList<BookLoansBean> getSearchLoanList(String bookId, String cardNo, String borrowerName) throws Exception
+	public ArrayList<BookLoansBean> getSearchLoanList(String bookId, String cardNo) throws Exception
 	{
 		log = log.getLogger("BookLoansDAO : getSearchLoanList()");
 		ArrayList<BookLoansBean> arrSearchList = new ArrayList<BookLoansBean>();
@@ -33,27 +33,20 @@ public class BookLoansDAO extends GenericDAO{
 		try
 		{
 			bCardNo = cardNo == "" ? 0 : Integer.parseInt(cardNo);
-			bName = splitBorrowerNames(borrowerName);
 			
 			conn = getConnection();
 			
-			String query = "Select loan_id, book_id, branch_id, card_no, date_out, due_date " +
+			String query = "Select loan_id, book_id, branch_id, card_no, date_out, due_date, date_in " +
 							"from book_loans " +
 							"where (book_id like ? or ? = '') " +
-							"and (card_no = ? " +
-							"or card_no in (Select card_no " + 
-							"from borrower " + 
-							"where fname like ? or fname like ? " +
-							"or lname like ? or lname like ? ))";
+							"and (card_no = ? or ? = 0)";
+			
 			
 			prepStmnt = conn.prepareStatement(query);
 			prepStmnt.setString(1, "%" + bookId + "%");
 			prepStmnt.setString(2, bookId);
 			prepStmnt.setInt(3, bCardNo);
-			prepStmnt.setString(4, "%" + bName[0] + "%");
-			prepStmnt.setString(5, "%" + bName[1] + "%");
-			prepStmnt.setString(6, "%" + bName[0] + "%");
-			prepStmnt.setString(7, "%" + bName[1] + "%");
+			prepStmnt.setInt(4, bCardNo);
 			
 			rs = prepStmnt.executeQuery();
 			
@@ -66,6 +59,13 @@ public class BookLoansDAO extends GenericDAO{
 				loanB.setCardNo(rs.getInt(4));
 				loanB.setDateOut(getDateValue(rs.getString(5), dtbs_to_date));
 				loanB.setDueDate(getDateValue(rs.getString(6), dtbs_to_date));
+				String date_in = rs.getString(7);
+				if (date_in == "" || date_in == null){
+					loanB.setDateIn(date_in);
+				}
+				else{
+					loanB.setDateIn(getDateValue(date_in,dtbs_to_date));
+				}
 				
 				arrSearchList.add(loanB);
 				
@@ -356,26 +356,5 @@ public class BookLoansDAO extends GenericDAO{
 		
 		return paidFineAmt;
 	}
-	
-	private String[] splitBorrowerNames(String borrowerName){
-		log = log.getLogger("BookLoansDAO : splitBorrowerNames()");
-		String[] bName = null;
-		
-		if (borrowerName.contains(" ")){
-			bName = borrowerName.split(" ");
-			if (bName.length != 2){
-				log.error("Borrower Name split not resulting into 2 parts in BookLoansDAO : " + borrowerName + " -> BorrowerName\n");
-			}
-		}
-		else{
-			bName = new String[2];
-			bName[0] = borrowerName;
-			bName[1] = "";
-		}
-		
-		
-		return bName; 
-	}
-
 
 }

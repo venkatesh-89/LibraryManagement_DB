@@ -1,13 +1,13 @@
 <%@include file="include/header1.jsp" %>
 <%@page import="bean.BorrowerBean"%> 
- 
+<%@include file="include/headerLinks.jsp" %>
+
+<script type="text/javascript" src="<%=context %>/javascript/Borrower.js"></script>  
  <title>Edit Borrower</title>
-        
-  	<%@include file="include/headerLinks.jsp" %>
-    
+      
     <h2>Edit Borrower : </h2>
 
-	<form method="post" action="<%=context %>/ctr">
+	<form method="post" action="<%=context %>/ctr" onsubmit="return validate();">
 	<% BorrowerBean borrowerB = null; String type = "";
 	if (request.getAttribute("controlType") != null){
 		type = (String) request.getAttribute("controlType");
@@ -21,27 +21,27 @@
 		</tr>
 		<tr>
 			<th>First Name</th>
-			<td><input name="fName" type="text" maxlength="30" value="<%=borrowerB.getfName() %>"/> </td>
+			<td><input name="fName" id="fName" type="text" maxlength="30" value="<%=borrowerB.getfName() %>"/> </td>
 			<td></td>
 		</tr>
 		<tr>
 			<th>Last Name</th>
-			<td><input name="lName" type="text" maxlength="30" value="<%=borrowerB.getlName() %>"/> </td>
+			<td><input name="lName" id="lName" type="text" maxlength="30" value="<%=borrowerB.getlName() %>"/> </td>
 			<td></td>
 		</tr>
 		<tr>
 			<th>Email</th>
-			<td><input name="email" type="email" maxlength="50" value="<%=borrowerB.getEmailId() %>"/> </td>
+			<td><input name="email" id="email" type="email" maxlength="50" value="<%=borrowerB.getEmailId() %>"/> </td>
 			<td></td>
 		</tr>
 		<tr>
 			<th>Address</th>
-			<td><textarea name="address" maxlength="100" rows=4 cols=20><%=borrowerB.getAddress() %> </textarea> </td>
+			<td><textarea name="address" id="address" maxlength="100" rows=4 cols=20><%=borrowerB.getAddress() %> </textarea> </td>
 			<td></td>
 		</tr>
 		<tr>
 			<th>Phone</th>
-			<td><input name="phone" type="text" maxlength="20" value="<%=borrowerB.getPhone() %>"/> </td>
+			<td><input name="phone" id="phone" type="text" maxlength="20" value="<%=borrowerB.getPhone() %>"/> </td>
 			<td></td>
 		</tr>
 		
