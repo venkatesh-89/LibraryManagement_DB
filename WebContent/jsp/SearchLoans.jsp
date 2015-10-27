@@ -169,7 +169,7 @@
 		if(session.getAttribute("searchLoan")!=null)
 		{
 %>
-			<font style="margin-left: 50px;font-size: 16px;color: blue;">Search results for :<b><i><%=(String)session.getAttribute("searchLoan") %></i></b> :</font><br/><br/>
+			<font style="margin-left: 50px;font-size: 16px;color: blue;">Search results for :<b><%=(String)session.getAttribute("searchLoan") %></b> :</font><br/><br/>
 			<font style="margin-left: 50px;font-size: 17px;color: black;\"><b>No matching records found.</b></font>
 <%		} 
 
