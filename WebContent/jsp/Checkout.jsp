@@ -18,8 +18,9 @@ $(document).ready(function() {
     	var cardNumber=$('#cardNo').val();
      $.get('<%=context %>/ctr',{action:"Checkout", control:"getBorrower", cardNo:cardNumber},function(jsonObj) { 
     	 	var json = JSON.parse(jsonObj);
+    	 	
     	 	if (json.status == false){
-    			alert(json.errMsg);
+    			alert(json.Msg);
     			$('#checkoutBtn').prop("disabled",true);
     	 	}else{
     	 		$('#borrowerName').text(json.borrowerName);

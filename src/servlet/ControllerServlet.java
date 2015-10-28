@@ -272,7 +272,8 @@ public class ControllerServlet extends HttpServlet {
 						errMsg = "Please enter a valid card number";
 						JSONObject json = new JSONObject();
 						json.put("status", false);
-						json.put("errMsg", errMsg);
+						json.put("Msg", errMsg);
+						
 						response.setContentType("text/plain");
 					    response.getWriter().write(json.toString());
 					}
@@ -288,8 +289,10 @@ public class ControllerServlet extends HttpServlet {
 							    json.put("borrowerEmail", borrowB.getEmailId());
 							}
 							else{
+								errMsg = "No Borrower exists";
 								json.put("borrowerName", "");
 							    json.put("borrowerEmail", "");
+							    json.put("Msg", errMsg);
 							}
 							
 						    response.setContentType("text/plain");

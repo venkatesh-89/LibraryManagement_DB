@@ -7,7 +7,7 @@
 }
 </style>
 
-<script src="http://code.jquery.com/jquery-latest.js"> </script>
+<script src="<%=getServletContext().getContextPath() %>/javascript/jquery-2.1.4.min.js"> </script>
 
 </head>
 <ul id="navlist">
